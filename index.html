@@ -2734,6 +2734,57 @@ Abarrotes:
     }
 
     async function initApp() {
+  // --- CAPTURAR PARÁMETROS DESDE LA URL (AppSheet) ---
+  const urlParams = new URLSearchParams(window.location.search);
+  const pesoUrl = urlParams.get('peso');
+  const estaturaUrl = urlParams.get('estatura');
+
+  if (pesoUrl) {
+    patientProfile.weight = parseFloat(pesoUrl);
+    const weightInput = document.getElementById('p-weight');
+    if (weightInput) weightInput.value = pesoUrl;
+  }
+
+  if (estaturaUrl) {
+    // Convierte los metros de la URL (ej: 1.59) a centímetros (159) para el campo del dashboard
+    const estaturaCm = Math.round(parseFloat(estaturaUrl) * 100);
+    patientProfile.height = estaturaCm;
+    const heightInput = document.getElementById('p-height');
+    if (heightInput) heightInput.value = estaturaCm;
+  }
+  // --------------------------------------------------
+
+  // Intentar restaurar estado previo si existe
+  try {
+    if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
+      const savedState = await window.notebookAppApi.getAppState();
+      if (savedState) {
+        if (savedState.patientProfile && !pesoUrl) patientProfile = savedState.patientProfile;
+        if (savedState.dailyMenu) dailyMenu = savedState.dailyMenu;
+        if (savedState.weeklyPlan) weeklyPlan = savedState.weeklyPlan;
+      }
+    }
+  } catch (e) {
+    console.warn("State restore error", e);
+  }
+
+  // Inicializar cálculos y tablas
+  recalcPatientPrescription();
+  filterTcqaData();
+  renderExchangeTables();
+  renderDailyMenuBuilder();
+  renderWeeklyPlan();
+  generateConsolidatedShoppingList();
+  runExchangeCalc();
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+
+  if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === 'function') {
+    window.notebookAppApi.notifyAppReady();
+  }
+}async function initApp() {
       // 1. Try to restore state if available
       try {
         if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === 'function') {
