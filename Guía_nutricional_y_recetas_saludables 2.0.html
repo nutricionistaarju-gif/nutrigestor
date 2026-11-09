@@ -1,0 +1,3389 @@
+<!DOCTYPE html>
+<html lang="es-419">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="dashboard">
+  <meta name="design-style" content="vitals">
+  <title>Nutri Gestor | Nutricionista Luis Aravena Juárez</title>
+
+  <!-- Google Fonts: Figtree & Atkinson Hyperlegible -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400;1,700&family=Figtree:wght@300..900&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons & Chart.js (Pinned versions from allowed CDNs) -->
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Vitals Theme Palette */
+      --background: #ffffff;
+      --surface-container-low: #f1f7f8;
+      --surface-container: #e3f1f3;
+      --surface-container-high: #d5e9ec;
+
+      --on-surface: #1b2b33;
+      --on-surface-variant: #46585f;
+
+      --outline: #7b9198;
+      --outline-variant: #d5e3e5;
+
+      --primary: #0f7c8a;
+      --on-primary: #ffffff;
+      --primary-container: #e3f1f3;
+      --on-primary-container: #0a5560;
+      --secondary: #1d5e3a;
+      --tertiary: #2e7d4f;
+      --error: #b3261e;
+      --on-error: #ffffff;
+
+      --data-1: #0f7c8a;
+      --data-2: #2e7d4f;
+      --data-3: #b86e00;
+      --data-4: #5c5fb0;
+      --data-context: #b8c7ca;
+
+      --positive: #2e7d4f;
+      --warning: #b86e00;
+      --focus: #0f7c8a;
+
+      /* Typography */
+      --font-headline: 'Figtree', sans-serif;
+      --font-body: 'Atkinson Hyperlegible', sans-serif;
+      --font-label: 'Figtree', sans-serif;
+
+      --display-size: clamp(1.6rem, 1.3rem + 1.1vw, 2.1rem);
+      --headline-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.45rem);
+      --subhead-size: clamp(1.02rem, 0.95rem + 0.25vw, 1.15rem);
+      --body-size: clamp(0.92rem, 0.88rem + 0.15vw, 0.98rem);
+      --label-size: 0.76rem;
+
+      /* Spacing Scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.25rem;
+      --space-2xl: 3.5rem;
+
+      /* Radii */
+      --rounded-sm: 0.375rem;
+      --rounded: 0.625rem;
+      --rounded-lg: 0.875rem;
+      --rounded-full: 9999px;
+
+      /* Effects */
+      --top-bar: 6px solid var(--primary);
+      --status-bar-width: 4px;
+      --card-border: 1px solid var(--outline-variant);
+      --card-lift: 0 1px 3px rgb(27 43 51 / 0.05), 0 6px 18px rgb(27 43 51 / 0.06);
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 200ms;
+    }
+
+    /* Base Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      background-color: var(--surface-container-low);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Vitals Top Accent Line */
+    .app-root {
+      border-top: var(--top-bar);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header & Branding */
+    header.clinical-header {
+      background: var(--background);
+      border-bottom: var(--card-border);
+      padding: var(--space-md) var(--space-xl);
+    }
+
+    .header-content {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .branding-block {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .branding-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--primary-container);
+      color: var(--primary);
+      border-radius: var(--rounded);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .branding-titles h1 {
+      font-family: var(--font-headline);
+      font-weight: 800;
+      font-size: var(--headline-size);
+      color: var(--on-surface);
+      letter-spacing: -0.015em;
+      line-height: 1.15;
+    }
+
+    .branding-titles p {
+      font-size: var(--label-size);
+      font-family: var(--font-label);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+      margin-top: 2px;
+    }
+
+    .patient-quick-badge {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      background: var(--surface-container-low);
+      border: var(--card-border);
+      padding: var(--space-xs) var(--space-md);
+      border-radius: var(--rounded-lg);
+    }
+
+    .quick-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .quick-meta-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+    }
+
+    .quick-meta-val {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Main Navigation Bar */
+    nav.clinical-nav {
+      background: var(--background);
+      border-bottom: var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .nav-container {
+      max-width: 1360px;
+      margin: 0 auto;
+      display: flex;
+      overflow-x: auto;
+      gap: var(--space-xs);
+      padding: 0 var(--space-md);
+      scrollbar-width: thin;
+    }
+
+    .nav-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--body-size);
+      color: var(--on-surface-variant);
+      padding: var(--space-md) var(--space-md);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      position: relative;
+      white-space: nowrap;
+      transition: color var(--dur-short) var(--ease-out), background var(--dur-short) var(--ease-out);
+      border-bottom: 3px solid transparent;
+      outline: none;
+    }
+
+    .nav-btn:hover {
+      color: var(--primary);
+      background: var(--surface-container-low);
+    }
+
+    .nav-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: transparent;
+    }
+
+    .nav-btn:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: -2px;
+    }
+
+    /* Layout Content */
+    main.app-main {
+      flex: 1;
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: var(--space-lg) var(--space-md) var(--space-2xl);
+    }
+
+    .tab-view {
+      display: none;
+      animation: fadeIn 0.25s var(--ease-out);
+    }
+
+    .tab-view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Section Typography & Titles */
+    .module-hero {
+      margin-bottom: var(--space-lg);
+    }
+
+    .module-title {
+      font-family: var(--font-headline);
+      font-size: var(--display-size);
+      font-weight: 800;
+      letter-spacing: -0.015em;
+      color: var(--on-surface);
+      line-height: 1.15;
+    }
+
+    .module-desc {
+      font-size: var(--subhead-size);
+      color: var(--on-surface-variant);
+      max-width: 75ch;
+      margin-top: var(--space-xs);
+    }
+
+    /* Vitals Status Cards */
+    .status-card {
+      background: var(--background);
+      border: var(--card-border);
+      border-left: var(--status-bar-width) solid var(--primary);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md) var(--space-lg);
+      box-shadow: var(--card-lift);
+      position: relative;
+    }
+
+    .status-card[data-status="ok"] { border-left-color: var(--tertiary); }
+    .status-card[data-status="warn"] { border-left-color: var(--warning); }
+    .status-card[data-status="alert"] { border-left-color: var(--error); }
+
+    .card-title-sm {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface-variant);
+      margin-bottom: var(--space-xs);
+    }
+
+    .card-num-large {
+      font-family: var(--font-headline);
+      font-size: 1.85rem;
+      font-weight: 800;
+      color: var(--on-surface);
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+
+    .card-subtext {
+      font-size: 0.85rem;
+      color: var(--on-surface-variant);
+      margin-top: var(--space-xs);
+    }
+
+    /* Reassurance & Status Chips */
+    .chip {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--label-size);
+      padding: 0.2rem 0.65rem;
+      border-radius: var(--rounded-full);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--surface-container);
+      color: var(--on-primary-container);
+      width: fit-content;
+    }
+
+    .chip[data-status="ok"] {
+      background: color-mix(in srgb, var(--tertiary) 14%, var(--background));
+      color: var(--secondary);
+    }
+
+    .chip[data-status="warn"] {
+      background: color-mix(in srgb, var(--warning) 16%, var(--background));
+      color: #7b4a00;
+    }
+
+    .chip[data-status="alert"] {
+      background: color-mix(in srgb, var(--error) 12%, var(--background));
+      color: var(--error);
+    }
+
+    /* Common Buttons */
+    .btn {
+      appearance: none;
+      border: none;
+      font-family: var(--font-headline);
+      font-weight: 600;
+      font-size: var(--body-size);
+      padding: var(--space-sm) var(--space-md);
+      border-radius: var(--rounded);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      transition: background var(--dur-short) var(--ease-out), transform var(--dur-micro) var(--ease-out);
+      outline: none;
+      min-height: 40px;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+
+    .btn-primary:hover {
+      background: #0b606b;
+    }
+
+    .btn-secondary {
+      background: var(--background);
+      color: var(--primary);
+      border: 1px solid var(--outline);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-container-low);
+      border-color: var(--primary);
+    }
+
+    .btn-accent {
+      background: var(--tertiary);
+      color: #ffffff;
+    }
+
+    .btn-accent:hover {
+      background: #246540;
+    }
+
+    .btn-sm {
+      padding: var(--space-xs) var(--space-sm);
+      font-size: 0.82rem;
+      min-height: 32px;
+      border-radius: var(--rounded-sm);
+    }
+
+    /* Form Fields */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .form-label {
+      font-family: var(--font-label);
+      font-weight: 600;
+      font-size: var(--label-size);
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .form-control, .form-select {
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--background);
+      border: 1px solid var(--outline);
+      border-radius: var(--rounded);
+      color: var(--on-surface);
+      outline: none;
+      transition: border-color var(--dur-short) var(--ease-out);
+      min-height: 40px;
+    }
+
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--surface-container);
+    }
+
+    /* Grids & Cards */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+      gap: var(--space-md);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: var(--space-md);
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+      gap: var(--space-md);
+    }
+
+    .panel-card {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-lg);
+      box-shadow: var(--card-lift);
+    }
+
+    .panel-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-md);
+      padding-bottom: var(--space-sm);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+
+    .panel-card-title {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: var(--headline-size);
+      color: var(--on-surface);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Progress & Adequacy Meters */
+    .meter-container {
+      margin-top: var(--space-sm);
+    }
+
+    .meter-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+    }
+
+    .meter-bar-bg {
+      height: 8px;
+      background: var(--surface-container-high);
+      border-radius: var(--rounded-full);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .meter-bar-fill {
+      height: 100%;
+      border-radius: var(--rounded-full);
+      transition: width 0.3s var(--ease-out), background-color 0.3s var(--ease-out);
+    }
+
+    /* Clean Interactive Tables */
+    .clinical-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border: var(--card-border);
+      border-radius: var(--rounded);
+      background: var(--background);
+    }
+
+    .clinical-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    .clinical-table th {
+      background: var(--surface-container-low);
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--on-surface-variant);
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+
+    .clinical-table td {
+      padding: var(--space-sm) var(--space-md);
+      border-bottom: 1px solid var(--outline-variant);
+      color: var(--on-surface);
+      vertical-align: middle;
+    }
+
+    .clinical-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .clinical-table tr:hover td {
+      background: var(--surface-container-low);
+    }
+
+    /* SVG Interactive Elements */
+    .plate-svg-box {
+      max-width: 440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .plate-slice {
+      cursor: pointer;
+      transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out);
+    }
+
+    .plate-slice:hover {
+      opacity: 0.9;
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.15));
+    }
+
+    .plate-slice.active-slice {
+      stroke: var(--on-surface);
+      stroke-width: 3px;
+    }
+
+    /* Hand Portions Cards */
+    .hand-card {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s var(--ease-out), transform 0.2s var(--ease-out), box-shadow 0.2s var(--ease-out);
+    }
+
+    .hand-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--card-lift);
+    }
+
+    .hand-card.selected {
+      border: 2px solid var(--primary);
+      background: var(--surface-container-low);
+    }
+
+    .hand-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--rounded-full);
+      background: var(--surface-container);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-sm);
+    }
+
+    /* Interactive 7-Day Matrix */
+    .matrix-day-col {
+      background: var(--background);
+      border: var(--card-border);
+      border-radius: var(--rounded-lg);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .matrix-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: var(--space-xs);
+      border-bottom: 2px solid var(--surface-container);
+    }
+
+    .matrix-meal-slot {
+      background: var(--surface-container-low);
+      border: 1px solid var(--outline-variant);
+      border-radius: var(--rounded-sm);
+      padding: var(--space-sm);
+      font-size: 0.85rem;
+    }
+
+    .matrix-meal-title {
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--on-surface-variant);
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      header.clinical-header {
+        padding: var(--space-md);
+      }
+      main.app-main {
+        padding: var(--space-md) var(--space-sm) var(--space-xl);
+      }
+      .branding-titles h1 {
+        font-size: 1.15rem;
+      }
+      .nav-btn {
+        padding: var(--space-sm) var(--space-sm);
+        font-size: 0.85rem;
+      }
+    }
+
+    @media print {
+      nav.clinical-nav, .btn, .no-print {
+        display: none !important;
+      }
+      .tab-view {
+        display: block !important;
+        page-break-after: always;
+      }
+      .app-root {
+        border-top: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-root">
+
+    <!-- Top Clinical Header -->
+    <header class="clinical-header">
+      <div class="header-content">
+        <div class="branding-block">
+          <div class="branding-icon" aria-hidden="true">
+            <i data-lucide="activity"></i>
+          </div>
+          <div class="branding-titles">
+            <h1>Nutri Gestor</h1>
+            <p>Suite Clínica & Educativa · Lic. Luis Aravena Juárez</p>
+          </div>
+        </div>
+
+        <!-- Quick Patient Summary Bar -->
+        <div class="patient-quick-badge">
+          <div class="quick-meta-item">
+            <span class="quick-meta-label">Paciente</span>
+            <span class="quick-meta-val" id="topPatientName">Ana Morales (Adulto)</span>
+          </div>
+          <div class="quick-meta-item">
+            <span class="quick-meta-label">Meta Calórica</span>
+            <span class="quick-meta-val" id="topCaloricGoal">1.850 kcal/d</span>
+          </div>
+          <div class="quick-meta-item">
+            <span class="quick-meta-label">Adecuación Menú</span>
+            <span class="chip" data-status="ok" id="topAdequacyBadge">
+              <i data-lucide="check-circle" style="width:12px; height:12px;"></i>
+              <span id="topAdequacyPercent">98.4%</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Navigation Bar -->
+    <nav class="clinical-nav" aria-label="Navegación principal">
+      <div class="nav-container">
+        <button class="nav-btn active" onclick="switchTab('prescripcion')">
+          <i data-lucide="clipboard-list" style="width:18px;height:18px;"></i>
+          <span>1. Prescripción Clínica</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('armador')">
+          <i data-lucide="utensils" style="width:18px;height:18px;"></i>
+          <span>2. Armador de Menú (TCQA)</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('planificador')">
+          <i data-lucide="calendar" style="width:18px;height:18px;"></i>
+          <span>3. Planificador Semanal (7 Días)</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('escalador')">
+          <i data-lucide="soup" style="width:18px;height:18px;"></i>
+          <span>4. Escalador de Recetas</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('educacion')">
+          <i data-lucide="apple" style="width:18px;height:18px;"></i>
+          <span>5. Educación Alimentaria</span>
+        </button>
+        <button class="nav-btn" onclick="switchTab('actividad')">
+          <i data-lucide="heart-pulse" style="width:18px;height:18px;"></i>
+          <span>6. Actividad Física (OMS)</span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main App Modules Container -->
+    <main class="app-main">
+
+      <!-- ========================================== -->
+      <!-- TAB 1: PRESCRIPCIÓN DEL PACIENTE -->
+      <!-- ========================================== -->
+      <section id="view-prescripcion" class="tab-view active">
+        <div class="module-hero">
+          <h2 class="module-title">Prescripción Nutricional del Paciente</h2>
+          <p class="module-desc">
+            Evaluación antropométrica, fórmulas clínicas de gasto energético (Harris-Benedict, Mifflin-St Jeor y empírico), distribución de macronutrientes, micronutrientes y asignación horaria por tiempos de comida.
+          </p>
+        </div>
+
+        <!-- Presets Bar -->
+        <div style="margin-bottom: var(--space-md); display:flex; flex-wrap:wrap; align-items:center; gap:var(--space-sm);">
+          <span style="font-family:var(--font-label); font-size:var(--label-size); font-weight:700; text-transform:uppercase; color:var(--on-surface-variant);">Plantillas Clínicas Rápidas:</span>
+          <button class="btn btn-secondary btn-sm" onclick="loadPatientPreset('standard')">Paciente Estándar (1.850 kcal)</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadPatientPreset('weight_loss')">Déficit Pérdida Grasa (1.500 kcal)</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadPatientPreset('sports')">Deportista / Masa Muscular (2.400 kcal)</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadPatientPreset('cardio')">Salud Cardiovascular & Adulto Mayor (1.700 kcal)</button>
+        </div>
+
+        <div class="grid-2">
+          <!-- Columna Izquierda: Datos y Antropometría -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="user" style="color:var(--primary);"></i>
+                Datos Antropométricos y Clínicos
+              </h3>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-md);">
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" for="patName">Nombre del Paciente</label>
+                <input type="text" id="patName" class="form-control" value="Ana Morales Gómez" oninput="updatePrescription()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patAge">Edad (Años)</label>
+                <input type="number" id="patAge" class="form-control" value="34" min="1" max="110" oninput="updatePrescription()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patSex">Sexo Biológico</label>
+                <select id="patSex" class="form-select" onchange="updatePrescription()">
+                  <option value="female" selected>Femenino</option>
+                  <option value="male">Masculino</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patWeight">Peso Actual (kg)</label>
+                <input type="number" id="patWeight" class="form-control" value="68.5" step="0.1" oninput="updatePrescription()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patHeight">Talla / Estatura (cm)</label>
+                <input type="number" id="patHeight" class="form-control" value="162" step="1" oninput="updatePrescription()">
+              </div>
+
+              <div class="form-group" style="grid-column: span 2;">
+                <label class="form-label" for="patActivity">Nivel de Actividad Física (Factor)</label>
+                <select id="patActivity" class="form-select" onchange="updatePrescription()">
+                  <option value="1.2">Sedentario (Trabajo de escritorio, poco ejercicio) - 1.20</option>
+                  <option value="1.375" selected>Ligero (Ejercicio 1-3 días/sem) - 1.375</option>
+                  <option value="1.55">Moderado (Ejercicio 3-5 días/sem) - 1.55</option>
+                  <option value="1.725">Intenso (Ejercicio 6-7 días/sem) - 1.725</option>
+                  <option value="1.9">Muy Intenso (Atleta de alto rendimiento) - 1.90</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patFormula">Fórmula de GEB</label>
+                <select id="patFormula" class="form-select" onchange="updatePrescription()">
+                  <option value="mifflin" selected>Mifflin - St Jeor (Recomendada)</option>
+                  <option value="harris">Harris - Benedict (Revisada)</option>
+                  <option value="empiric">Cálculo Empírico (30 kcal/kg)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="patClinicalGoal">Objetivo Nutricional</label>
+                <select id="patClinicalGoal" class="form-select" onchange="updatePrescription()">
+                  <option value="maintenance">Mantenimiento de Peso (0 kcal)</option>
+                  <option value="deficit_mild">Déficit Leve (-300 kcal/d)</option>
+                  <option value="deficit_moderate" selected>Déficit Moderado (-500 kcal/d)</option>
+                  <option value="surplus_mild">Superávit Muscular (+300 kcal/d)</option>
+                  <option value="custom">Manual / Personalizado</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Antropometría Calculada (Resultados Inmediatos) -->
+            <div style="margin-top:var(--space-md); padding:var(--space-md); background:var(--surface-container-low); border-radius:var(--rounded); border:1px solid var(--outline-variant); display:grid; grid-template-columns: repeat(3, 1fr); gap:var(--space-sm); text-align:center;">
+              <div>
+                <div class="card-title-sm">IMC Actual</div>
+                <div id="resBmi" style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--on-surface);">26.1 kg/m²</div>
+                <span class="chip" data-status="warn" id="resBmiStatus" style="margin-top:4px;">Sobrepeso</span>
+              </div>
+              <div>
+                <div class="card-title-sm">Peso Ideal / Ajustado</div>
+                <div id="resIdealWeight" style="font-family:var(--font-headline); font-weight:700; font-size:1.15rem; color:var(--on-surface);">55.1 kg</div>
+                <div style="font-size:0.75rem; color:var(--on-surface-variant);" id="resAdjWeight">Ajustado: 58.5 kg</div>
+              </div>
+              <div>
+                <div class="card-title-sm">GEB Basal Calculado</div>
+                <div id="resGeb" style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--primary);">1.378 kcal</div>
+                <div style="font-size:0.75rem; color:var(--on-surface-variant);" id="resGetTotal">GET: 1.895 kcal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Requerimiento Calórico Objetivo y Macronutrientes -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="pie-chart" style="color:var(--primary);"></i>
+                Requerimiento Objetivo & Macronutrientes
+              </h3>
+            </div>
+
+            <!-- Objetivo Calórico Manual o Sincronizado -->
+            <div style="display:flex; justify-content:space-between; align-items:center; background:var(--surface-container); padding:var(--space-md); border-radius:var(--rounded); margin-bottom:var(--space-md);">
+              <div>
+                <div class="card-title-sm">Requerimiento Energético Prescrito (VCT)</div>
+                <div style="display:flex; align-items:baseline; gap:var(--space-sm);">
+                  <input type="number" id="patTargetCalories" class="form-control" style="width:130px; font-size:1.4rem; font-weight:800; color:var(--primary); font-family:var(--font-headline);" value="1850" step="25" oninput="onTargetCaloriesChange()">
+                  <span style="font-weight:700; color:var(--on-surface-variant);">kcal / día</span>
+                </div>
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="syncTargetWithCalculated()" title="Alinear con GET y objetivo clínico">
+                <i data-lucide="refresh-cw" style="width:14px; height:14px;"></i>
+                Usar GET Calculado
+              </button>
+            </div>
+
+            <!-- Sliders / Entradas de Macronutrientes -->
+            <div style="display:flex; flex-direction:column; gap:var(--space-md);">
+              <!-- Proteínas -->
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:700; color:var(--tertiary);">Proteínas (g/kg & % VCT)</span>
+                  <span id="protSummary" style="font-family:var(--font-headline); font-weight:800; color:var(--tertiary);">92.5 g (20% · 1.35 g/kg)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:var(--space-sm); margin-top:4px;">
+                  <input type="range" id="protSlider" min="10" max="35" value="20" step="1" style="flex:1;" oninput="onMacroSliderChange('prot')">
+                  <span style="width:48px; text-align:right; font-weight:700;" id="protPercentLabel">20%</span>
+                </div>
+              </div>
+
+              <!-- Carbohidratos -->
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:700; color:var(--primary);">Carbohidratos (% VCT)</span>
+                  <span id="choSummary" style="font-family:var(--font-headline); font-weight:800; color:var(--primary);">231.3 g (50%)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:var(--space-sm); margin-top:4px;">
+                  <input type="range" id="choSlider" min="30" max="65" value="50" step="1" style="flex:1;" oninput="onMacroSliderChange('cho')">
+                  <span style="width:48px; text-align:right; font-weight:700;" id="choPercentLabel">50%</span>
+                </div>
+              </div>
+
+              <!-- Grasas / Lípidos -->
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-weight:700; color:var(--warning);">Lípidos Totales (% VCT)</span>
+                  <span id="fatSummary" style="font-family:var(--font-headline); font-weight:800; color:var(--warning);">61.7 g (30%)</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:var(--space-sm); margin-top:4px;">
+                  <input type="range" id="fatSlider" min="15" max="45" value="30" step="1" style="flex:1;" oninput="onMacroSliderChange('fat')">
+                  <span style="width:48px; text-align:right; font-weight:700;" id="fatPercentLabel">30%</span>
+                </div>
+                <div style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">
+                  Pauta Mediterránea: Grasas monoinsaturadas (AOVE) 15-20%, saturadas &lt; 8%, omega-3 &ge; 0.5g/d.
+                </div>
+              </div>
+
+              <!-- Verificador de Suma de 100% -->
+              <div id="macroSumIndicator" class="chip" data-status="ok" style="justify-content:center; width:100%;">
+                Suma total de distribución de macronutrientes: 100%
+              </div>
+            </div>
+
+            <!-- Micronutrientes y Fibra Clave -->
+            <div style="margin-top:var(--space-md); padding-top:var(--space-md); border-top:1px solid var(--outline-variant);">
+              <div class="card-title-sm">Metas de Micronutrientes & Fibra (Recomendación Diaria)</div>
+              <div class="grid-3" style="margin-top:var(--space-xs); font-size:0.84rem;">
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Fibra Dietaria:</strong> &ge; 25 - 30 g
+                </div>
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Calcio:</strong> 1.000 mg
+                </div>
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Hierro:</strong> 18 mg (Mujer)
+                </div>
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Sodio:</strong> &lt; 2.000 mg
+                </div>
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Vitamina C:</strong> &ge; 75 mg
+                </div>
+                <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+                  <strong>Omega-3:</strong> &ge; 500 mg
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfico Donut de Distribución Calórica de Macronutrientes -->
+            <div style="margin-top:var(--space-md); padding-top:var(--space-md); border-top:1px solid var(--outline-variant);">
+              <div class="card-title-sm">Distribución Porcentual del VCT Prescrito</div>
+              <div style="display:flex; align-items:center; gap:var(--space-md); margin-top:var(--space-xs);">
+                <div style="width:130px; height:130px; position:relative; flex-shrink:0;">
+                  <canvas id="macroDonutChart"></canvas>
+                </div>
+                <div style="flex:1; display:flex; flex-direction:column; gap:6px; font-size:0.83rem;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--tertiary); font-weight:700;">
+                      <span style="width:10px; height:10px; border-radius:2px; background:var(--tertiary); display:inline-block;"></span>
+                      Proteínas:
+                    </span>
+                    <strong id="chartProtKcal">370 kcal (20%)</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--primary); font-weight:700;">
+                      <span style="width:10px; height:10px; border-radius:2px; background:var(--primary); display:inline-block;"></span>
+                      Carbohidratos:
+                    </span>
+                    <strong id="chartChoKcal">925 kcal (50%)</strong>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="display:flex; align-items:center; gap:6px; color:var(--warning); font-weight:700;">
+                      <span style="width:10px; height:10px; border-radius:2px; background:var(--warning); display:inline-block;"></span>
+                      Lípidos:
+                    </span>
+                    <strong id="chartFatKcal">555 kcal (30%)</strong>
+                  </div>
+                  <div style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:4px; padding-top:4px; border-top:1px dashed var(--outline-variant);">
+                    Total calórico objetivo: <span id="chartTotalKcalText">1.850 kcal</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tarjeta de Asignación de Porciones Objetivo por Grupo de Alimentos (Intercambio) -->
+        <div class="panel-card" style="margin-top:var(--space-md);">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="layers" style="color:var(--primary);"></i>
+              Asignación de Porciones Objetivo por Grupo de Alimentos (Sistema de Intercambio)
+            </h3>
+            <span class="chip" data-status="ok" id="portionStatusBadge">Adecuación: 99.5%</span>
+          </div>
+
+          <p style="font-size:0.88rem; color:var(--on-surface-variant); margin-bottom:var(--space-md);">
+            Basado en la Guía de Porciones de Intercambio (Jury &amp; Urteaga 1999) y las recomendaciones del Dr. Ramón De Cangas. Ajusta las raciones diarias prescritas de cada grupo de alimentos para calcular el balance calórico y macronutricional automático.
+          </p>
+
+          <div class="clinical-table-wrapper">
+            <table class="clinical-table">
+              <thead>
+                <tr>
+                  <th>Grupo de Alimento</th>
+                  <th style="width:120px; text-align:center;">Porciones / Día</th>
+                  <th>Equivalencia Típica (Jury &amp; Urteaga)</th>
+                  <th style="text-align:right;">Kcal/Porc.</th>
+                  <th style="text-align:right;">P (g)</th>
+                  <th style="text-align:right;">CHO (g)</th>
+                  <th style="text-align:right;">G (g)</th>
+                  <th style="text-align:right;">Subtotal Kcal</th>
+                </tr>
+              </thead>
+              <tbody id="portionsTableBody">
+                <!-- Se llena dinámicamente y con inputs interactivos -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Resumen de Adecuación de Porciones vs. Prescripción -->
+          <div style="margin-top:var(--space-md); padding:var(--space-md); background:var(--surface-container-low); border-radius:var(--rounded); border:1px solid var(--outline-variant); display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-md); text-align:center;">
+            <div>
+              <div class="card-title-sm">Kcal de Porciones</div>
+              <div style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--primary);" id="portKcalTotal">1.840 kcal</div>
+              <div style="font-size:0.75rem; color:var(--on-surface-variant);">Meta: <span id="portKcalGoalText">1.850 kcal</span></div>
+            </div>
+            <div>
+              <div class="card-title-sm">Proteínas Porciones</div>
+              <div style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--tertiary);" id="portProtTotal">91.0 g</div>
+              <div style="font-size:0.75rem; color:var(--on-surface-variant);">Meta: <span id="portProtGoalText">92.5 g</span></div>
+            </div>
+            <div>
+              <div class="card-title-sm">Carbohidratos Porciones</div>
+              <div style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--primary);" id="portChoTotal">232.0 g</div>
+              <div style="font-size:0.75rem; color:var(--on-surface-variant);">Meta: <span id="portChoGoalText">231.3 g</span></div>
+            </div>
+            <div>
+              <div class="card-title-sm">Lípidos Porciones</div>
+              <div style="font-family:var(--font-headline); font-weight:800; font-size:1.3rem; color:var(--warning);" id="portFatTotal">61.0 g</div>
+              <div style="font-size:0.75rem; color:var(--on-surface-variant);">Meta: <span id="portFatGoalText">61.7 g</span></div>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--space-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-sm);">
+            <div id="portionFeedbackText" style="font-size:0.86rem; font-weight:600; color:var(--tertiary);">
+              Adecuación calórica de las porciones: 99.5% (En rango óptimo 95% - 105%).
+            </div>
+            <div style="display:flex; gap:var(--space-xs);">
+              <button class="btn btn-secondary btn-sm" onclick="autoAdjustPortionsToGoal()">
+                <i data-lucide="sparkles" style="width:14px; height:14px;"></i>
+                Auto-Ajustar Porciones a Meta
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetPortionsToDefault()">
+                Restablecer Porciones
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fila Inferior: Asignación de Porciones y Horarios de Comida -->
+        <div class="panel-card" style="margin-top:var(--space-md);">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="clock" style="color:var(--primary);"></i>
+              Distribución Horaria y Asignación de Porciones por Tiempo de Comida
+            </h3>
+            <span class="chip" data-status="ok">5 Tiempos Estructurados</span>
+          </div>
+
+          <p style="font-size:0.88rem; color:var(--on-surface-variant); margin-bottom:var(--space-md);">
+            Basado en la Guía de Porciones de Intercambio (Jury & Urteaga) y el ritmo circadiano mediterráneo. Distribuye las raciones diarias entre los diferentes tiempos de ingesta.
+          </p>
+
+          <div class="clinical-table-wrapper">
+            <table class="clinical-table">
+              <thead>
+                <tr>
+                  <th>Tiempo de Comida</th>
+                  <th>Horario Aconsejado</th>
+                  <th>% VCT</th>
+                  <th>Kcal Teóricas</th>
+                  <th>Porciones Sugeridas de Alimentos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Desayuno</strong></td>
+                  <td>07:30 - 08:30</td>
+                  <td>20%</td>
+                  <td><span id="mealKcal1">370</span> kcal</td>
+                  <td>1 Cereal/Pan Int. + 1 Lácteo descremado + 1 Fruta fresca + 1 Grasa sana (nueces/aceite)</td>
+                </tr>
+                <tr>
+                  <td><strong>Colación Mañana</strong></td>
+                  <td>10:30 - 11:30</td>
+                  <td>10%</td>
+                  <td><span id="mealKcal2">185</span> kcal</td>
+                  <td>1 Fruta fresca entera de estación (o 1 puñado de frutos secos)</td>
+                </tr>
+                <tr>
+                  <td><strong>Almuerzo</strong></td>
+                  <td>13:30 - 14:30</td>
+                  <td>35%</td>
+                  <td><span id="mealKcal3">648</span> kcal</td>
+                  <td>2 Verduras (1 cruda) + 1 Proteína (pescado/legumbre/ave) + 1 Cereal o tubérculo + 1 AOVE</td>
+                </tr>
+                <tr>
+                  <td><strong>Once / Merienda</strong></td>
+                  <td>17:30 - 18:30</td>
+                  <td>15%</td>
+                  <td><span id="mealKcal4">277</span> kcal</td>
+                  <td>1 Lácteo o infusión + 1/2 Pan marraqueta/integral o avena + 1 Fruta</td>
+                </tr>
+                <tr>
+                  <td><strong>Cena</strong></td>
+                  <td>20:00 - 21:00</td>
+                  <td>20%</td>
+                  <td><span id="mealKcal5">370</span> kcal</td>
+                  <td>1-2 Verduras salteadas o crema ligera + 1 Proteína magra + 1 Grasa sana (AOVE)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 2: ARMADOR DE MENÚS CON TCQA 2018 -->
+      <!-- ========================================== -->
+      <section id="view-armador" class="tab-view">
+        <div class="module-hero">
+          <h2 class="module-title">Armador de Menús con TCQA 2018</h2>
+          <p class="module-desc">
+            Selecciona y combina alimentos de la Tabla de Composición Química de Alimentos chilena (TCQA 2018) con análisis inmediato de calorías, macronutrientes, fibra, sodio, calcio, hierro, vitamina C, vitamina D y omega-3 vs. la prescripción del paciente.
+          </p>
+        </div>
+
+        <!-- Barras de Adecuación en Tiempo Real -->
+        <div class="grid-4" style="margin-bottom:var(--space-md);">
+          <div class="status-card" id="cardAdeqKcal" data-status="ok">
+            <div class="card-title-sm">Energía Total</div>
+            <div class="card-num-large"><span id="sumKcal">0</span> <span style="font-size:1rem; font-weight:600;">/ <span id="targetKcalDisplay">1.850</span> kcal</span></div>
+            <div class="meter-bar-bg" style="margin-top:6px;">
+              <div id="barKcal" class="meter-bar-fill" style="width: 0%; background:var(--primary);"></div>
+            </div>
+            <div class="card-subtext" id="statusKcalText">Adecuación: 0%</div>
+          </div>
+
+          <div class="status-card" id="cardAdeqProt" data-status="ok">
+            <div class="card-title-sm">Proteínas</div>
+            <div class="card-num-large"><span id="sumProt">0</span> <span style="font-size:1rem; font-weight:600;">/ <span id="targetProtDisplay">92</span> g</span></div>
+            <div class="meter-bar-bg" style="margin-top:6px;">
+              <div id="barProt" class="meter-bar-fill" style="width: 0%; background:var(--tertiary);"></div>
+            </div>
+            <div class="card-subtext" id="statusProtText">Adecuación: 0%</div>
+          </div>
+
+          <div class="status-card" id="cardAdeqCho" data-status="ok">
+            <div class="card-title-sm">Carbohidratos</div>
+            <div class="card-num-large"><span id="sumCho">0</span> <span style="font-size:1rem; font-weight:600;">/ <span id="targetChoDisplay">231</span> g</span></div>
+            <div class="meter-bar-bg" style="margin-top:6px;">
+              <div id="barCho" class="meter-bar-fill" style="width: 0%; background:var(--data-1);"></div>
+            </div>
+            <div class="card-subtext" id="statusChoText">Adecuación: 0%</div>
+          </div>
+
+          <div class="status-card" id="cardAdeqFat" data-status="ok">
+            <div class="card-title-sm">Lípidos</div>
+            <div class="card-num-large"><span id="sumFat">0</span> <span style="font-size:1rem; font-weight:600;">/ <span id="targetFatDisplay">62</span> g</span></div>
+            <div class="meter-bar-bg" style="margin-top:6px;">
+              <div id="barFat" class="meter-bar-fill" style="width: 0%; background:var(--warning);"></div>
+            </div>
+            <div class="card-subtext" id="statusFatText">Adecuación: 0%</div>
+          </div>
+        </div>
+
+        <!-- Panel de Micronutrientes y Fibra Clave del Día -->
+        <div class="panel-card" style="margin-bottom:var(--space-md); padding:var(--space-md) var(--space-lg);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-sm);">
+            <h4 style="font-family:var(--font-headline); font-size:0.95rem; font-weight:700; color:var(--on-surface);">Balance de Micronutrientes Críticos & Fibra</h4>
+            <span style="font-size:0.75rem; color:var(--on-surface-variant);">Pauta Preventiva OMS / SENC</span>
+          </div>
+          <div class="grid-3" style="gap:var(--space-sm); font-size:0.84rem;">
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Fibra: <strong id="sumFiber">0</strong> g</span>
+              <span id="badgeFiber" class="chip" data-status="warn">Meta: &ge;25g</span>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Sodio: <strong id="sumSodium">0</strong> mg</span>
+              <span id="badgeSodium" class="chip" data-status="ok">&lt;2.000mg</span>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Calcio: <strong id="sumCalcium">0</strong> mg</span>
+              <span id="badgeCalcium" class="chip" data-status="warn">Meta: 1000mg</span>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Hierro: <strong id="sumIron">0</strong> mg</span>
+              <span id="badgeIron" class="chip" data-status="warn">Meta: 18mg</span>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Vitamina C: <strong id="sumVitC">0</strong> mg</span>
+              <span id="badgeVitC" class="chip" data-status="warn">Meta: &ge;75mg</span>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+              <span>Omega-3: <strong id="sumOmega3">0</strong> g</span>
+              <span id="badgeOmega3" class="chip" data-status="warn">Meta: &ge;0.5g</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interfaz de Selección y Armado -->
+        <div class="grid-2">
+          <!-- Columna Izquierda: Catálogo y Buscador de Alimentos TCQA -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="database" style="color:var(--primary);"></i>
+                Base de Alimentos TCQA 2018
+              </h3>
+              <span class="chip" id="foodCountChip">50 Alimentos</span>
+            </div>
+
+            <!-- Filtros de Búsqueda -->
+            <div style="display:flex; flex-direction:column; gap:var(--space-sm); margin-bottom:var(--space-md);">
+              <div class="form-group">
+                <label class="form-label" for="foodSearchInput">Buscar alimento</label>
+                <input type="text" id="foodSearchInput" class="form-control" placeholder="Ej: Salmón, lentejas, avena, palta, acelga..." oninput="renderFoodCatalog()">
+              </div>
+              <div style="display:flex; gap:var(--space-sm); flex-wrap:wrap;">
+                <select id="foodCategoryFilter" class="form-select" style="flex:1;" onchange="renderFoodCatalog()">
+                  <option value="all">Todas las categorías</option>
+                  <option value="verduras">Verduras y Hortalizas</option>
+                  <option value="frutas">Frutas Frescas</option>
+                  <option value="cereales">Cereales y Tubérculos</option>
+                  <option value="legumbres">Legumbres</option>
+                  <option value="pescados">Pescados y Mariscos</option>
+                  <option value="carnes">Carnes, Aves y Huevos</option>
+                  <option value="lacteos">Lácteos y Derivados</option>
+                  <option value="aceites">Aceites, Frutos Secos y Semillas</option>
+                </select>
+
+                <select id="targetMealSlot" class="form-select" style="width:170px;">
+                  <option value="Desayuno">Al Desayuno</option>
+                  <option value="Colación">A la Colación</option>
+                  <option value="Almuerzo" selected>Al Almuerzo</option>
+                  <option value="Once">A la Once</option>
+                  <option value="Cena">A la Cena</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Lista de Alimentos TCQA Filtrados -->
+            <div id="foodCatalogList" style="max-height: 480px; overflow-y:auto; display:flex; flex-direction:column; gap:var(--space-xs); padding-right:4px;">
+              <!-- Se rellena dinámicamente -->
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Menú del Día Armado -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="shopping-bag" style="color:var(--primary);"></i>
+                Menú Planificado para el Día
+              </h3>
+              <div style="display:flex; gap:var(--space-xs);">
+                <button class="btn btn-secondary btn-sm" onclick="loadSampleDayMenu()" title="Cargar menú mediterráneo completo">Cargar Pauta Modelo</button>
+                <button class="btn btn-secondary btn-sm" onclick="clearDayMenu()" title="Vaciar lista">Limpiar</button>
+              </div>
+            </div>
+
+            <div id="dayMenuList" style="display:flex; flex-direction:column; gap:var(--space-md); max-height:560px; overflow-y:auto; padding-right:4px;">
+              <!-- Se rellena por tiempos de comida: Desayuno, Colación, Almuerzo, Once, Cena -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 3: PLANIFICADOR SEMANAL ADAPTATIVO (7 DÍAS) -->
+      <!-- ========================================== -->
+      <section id="view-planificador" class="tab-view">
+        <div class="module-hero">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:var(--space-md);">
+            <div>
+              <h2 class="module-title">Planificador Semanal Adaptativo (7 Días)</h2>
+              <p class="module-desc">
+                Matriz completa de Lunes a Domingo estructurada bajo el patrón de la Dieta Mediterránea (legumbres 3x/sem, pescados 4x/sem alternando blancos y azules, 3 frutas y 2 verduras diarias, cereales integrales y AOVE).
+              </p>
+            </div>
+            <div style="display:flex; gap:var(--space-sm);">
+              <button class="btn btn-primary btn-sm" onclick="printWeeklyPlan()">
+                <i data-lucide="printer" style="width:16px;height:16px;"></i>
+                Imprimir / PDF Pauta
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="exportPlanCSV()">
+                <i data-lucide="download" style="width:16px;height:16px;"></i>
+                Exportar CSV
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Indicadores de Cumplimiento Mediterráneo Semanal -->
+        <div class="grid-4" style="margin-bottom:var(--space-md);">
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Frecuencia Legumbres</div>
+            <div class="card-num-large">3 <span style="font-size:1rem; font-weight:600;">/ sem</span></div>
+            <div class="chip" data-status="ok" style="margin-top:4px;">Cumple meta (2-4x)</div>
+          </div>
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Pescados & Mariscos</div>
+            <div class="card-num-large">4 <span style="font-size:1rem; font-weight:600;">/ sem</span></div>
+            <div class="chip" data-status="ok" style="margin-top:4px;">2 Azules + 2 Blancos</div>
+          </div>
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Frutas & Verduras</div>
+            <div class="card-num-large">&ge; 5 <span style="font-size:1rem; font-weight:600;">raciones/d</span></div>
+            <div class="chip" data-status="ok" style="margin-top:4px;">3 Frutas + 2 Verduras</div>
+          </div>
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Grasa Preferente</div>
+            <div class="card-num-large">AOVE / Palta</div>
+            <div class="chip" data-status="ok" style="margin-top:4px;">Virgen Extra Diario</div>
+          </div>
+        </div>
+
+        <!-- Matriz Semanal de 7 Días -->
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap:var(--space-sm);">
+          <!-- Lunes -->
+          <div class="matrix-day-col" id="colDay0">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Lunes</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.840 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:00</span></div>
+              <div>Yogur natural con avena, manzana picada y nueces.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:00</span></div>
+              <div>1 Clementina fresca + 4 almendras.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>13:45</span></div>
+              <div>Guiso de garbanzos con espinacas y pimientos + Ensalada de achicoria con AOVE + Naranja.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>17:30</span></div>
+              <div>Té verde con leche descremada + Pan molde integral con quesillo y orégano.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Merluza a la cazuela con cebolla, tomate y perejil al vapor + Acelga salteada.</div>
+            </div>
+          </div>
+
+          <!-- Martes -->
+          <div class="matrix-day-col" id="colDay1">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Martes</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.860 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:00</span></div>
+              <div>Leche descremada con cacao puro + 1/2 Marraqueta con huevo revuelto y tomate.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:00</span></div>
+              <div>1 Manzana verde entera con cáscara.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>13:45</span></div>
+              <div>Espirales integrales con pechuga de pavo salteada con verduras al AOVE + Ensalada verde.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>17:30</span></div>
+              <div>Yogur descremado con frutillas frescas y semillas de chía.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Crema fría de zanahorias y cilantro + Salmón a la plancha con espárragos.</div>
+            </div>
+          </div>
+
+          <!-- Miércoles -->
+          <div class="matrix-day-col" id="colDay2">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Miércoles</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.830 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:00</span></div>
+              <div>Porridge de avena cocida en leche descremada con canela y rodajas de durazno.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:00</span></div>
+              <div>1 Kiwi o naranja fresca entera.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>13:45</span></div>
+              <div>Lentejas tradicionales estofadas con zapallo, zanahoria y arroz integral + Ensalada a la chilena.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>17:30</span></div>
+              <div>Infusión de hierbas + Tostada de centeno con palta y sésamo.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Tortilla de acelga y champiñones con 2 claras y 1 huevo + Ensalada de betarraga rallada.</div>
+            </div>
+          </div>
+
+          <!-- Jueves -->
+          <div class="matrix-day-col" id="colDay3">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Jueves</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.855 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:00</span></div>
+              <div>Yogur natural con 3 cucharadas de avena y 1 puñadito de arándanos frescos.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:00</span></div>
+              <div>1 Pera de agua fresca.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>13:45</span></div>
+              <div>Filete de trucha al horno con finas hierbas + Quinoa cocida con pimientos y cebollín + Ensalada.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>17:30</span></div>
+              <div>Leche descremada con canela + Pan pita integral con requesón.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Sopa de verduras casera con pollo desmenuzado y puerros + Rodaja de melón o kiwi.</div>
+            </div>
+          </div>
+
+          <!-- Viernes -->
+          <div class="matrix-day-col" id="colDay4">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Viernes</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.870 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:00</span></div>
+              <div>Café con leche descremada + Tostada integral con pasta de ricota y gotas de AOVE.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:00</span></div>
+              <div>1 Plátano pequeño o 2 clementinas.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>13:45</span></div>
+              <div>Ceviche fresco de salmón con palta, lechuga morada, cilantro y choclo cocido.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>17:30</span></div>
+              <div>Té con leche + 1/2 Marraqueta con quesillo fresco y rodajas de tomate.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Puré de zapallo camote con huevo pochado y espinacas tiernas con ajo y aceite de oliva.</div>
+            </div>
+          </div>
+
+          <!-- Sábado -->
+          <div class="matrix-day-col" id="colDay5">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Sábado</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.845 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>08:30</span></div>
+              <div>Tazón de yogur natural griego sin azúcar con nueces, semillas de calabaza y frutillas.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:30</span></div>
+              <div>1 Naranja entera en gajos.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>14:00</span></div>
+              <div>Porotos negros cocidos con cebolla salteada, pimentón y arroz integral + Ensalada de repollo y zanahoria.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>18:00</span></div>
+              <div>Leche descremada batida con frutillas naturales + 1 rebanada de pan integral.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>21:00</span></div>
+              <div>Brochetas de pechuga de pollo con pimientos y cebolla morada a la plancha + Ensalada de hojas verdes.</div>
+            </div>
+          </div>
+
+          <!-- Domingo -->
+          <div class="matrix-day-col" id="colDay6">
+            <div class="matrix-day-header">
+              <strong style="color:var(--primary);">Domingo</strong>
+              <span class="chip" data-status="ok" style="font-size:0.7rem;">1.850 kcal</span>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Desayuno</span> <span>09:00</span></div>
+              <div>Omelette de 2 huevos con espinacas y champiñones + 1 tostada de pan integral con AOVE.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Colación</span> <span>11:30</span></div>
+              <div>1 Manzana asada con canela sin azúcar añadido.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Almuerzo</span> <span>14:00</span></div>
+              <div>Guiso de merluza con papas cocidas al vapor, cebollas y sofrito de tomate al fuego lento + Ensalada criolla.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Once</span> <span>18:00</span></div>
+              <div>Té con leche descremada + 1 rebanada de pan integral con palta machacada.</div>
+            </div>
+            <div class="matrix-meal-slot">
+              <div class="matrix-meal-title"><span>Cena</span> <span>20:30</span></div>
+              <div>Crema de verduras variadas (apio, zapallito italiano, zanahoria) + Requesón fresco con sésamo.</div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 4: ESCALADOR DE PREPARACIONES Y COMENSALES -->
+      <!-- ========================================== -->
+      <section id="view-escalador" class="tab-view">
+        <div class="module-hero">
+          <h2 class="module-title">Escalador de Preparaciones y Comensales</h2>
+          <p class="module-desc">
+            Catálogo de recetas tradicionales y platos de cuchara de la guía. Ajusta el número de comensales en tiempo real para recalcular automáticamente los gramos, medidas caseras y el aporte nutricional por porción y lote total.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <!-- Columna Izquierda: Selección de Receta y Multiplicador -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="chef-hat" style="color:var(--primary);"></i>
+                Seleccionar Receta y Comensales
+              </h3>
+            </div>
+
+            <div class="form-group" style="margin-bottom:var(--space-md);">
+              <label class="form-label" for="recipeSelector">Receta de la Guía</label>
+              <select id="recipeSelector" class="form-select" onchange="renderRecipeDetail()">
+                <option value="rec1" selected>Ceviche de Salmón, Palta y Lechuga Fresca</option>
+                <option value="rec2">Guiso Tradicional de Garbanzos con Espinacas y Pimientos</option>
+                <option value="rec3">Merluza a la Cazuela con Cebolla, Tomate y Perejil</option>
+                <option value="rec4">Crema Fría de Zanahorias, Pimentón y Cilantro</option>
+                <option value="rec5">Espirales Integrales con Pavo y Verduras al AOVE</option>
+                <option value="rec6">Copa Mediterránea de Yogur, Avena y Nueces</option>
+              </select>
+            </div>
+
+            <!-- Selector de Comensales -->
+            <div style="background:var(--surface-container); padding:var(--space-md); border-radius:var(--rounded); margin-bottom:var(--space-md);">
+              <label class="form-label" style="margin-bottom:4px; display:block;">Número de Comensales / Porciones</label>
+              <div style="display:flex; align-items:center; gap:var(--space-sm);">
+                <button class="btn btn-secondary btn-sm" onclick="adjustDiners(-1)">-1</button>
+                <input type="number" id="recipeDinersInput" class="form-control" style="width:90px; text-align:center; font-size:1.3rem; font-weight:800; color:var(--primary);" value="4" min="1" max="50" oninput="renderRecipeDetail()">
+                <button class="btn btn-secondary btn-sm" onclick="adjustDiners(1)">+1</button>
+                <div style="display:flex; gap:4px; margin-left:var(--space-sm);">
+                  <button class="btn btn-secondary btn-sm" onclick="setDiners(1)">1 p.</button>
+                  <button class="btn btn-secondary btn-sm" onclick="setDiners(2)">2 p.</button>
+                  <button class="btn btn-secondary btn-sm" onclick="setDiners(4)">4 p.</button>
+                  <button class="btn btn-secondary btn-sm" onclick="setDiners(6)">6 p.</button>
+                </div>
+              </div>
+            </div>
+
+            <div id="recipeDescriptionBlock" style="font-size:0.9rem; color:var(--on-surface-variant); line-height:1.5;">
+              <!-- Descripción de la receta -->
+            </div>
+
+            <div style="margin-top:var(--space-md); display:flex; gap:var(--space-sm);">
+              <button class="btn btn-primary btn-sm" onclick="addCurrentRecipeToMeal()">
+                <i data-lucide="plus-circle" style="width:16px;height:16px;"></i>
+                Añadir 1 Porción al Menú del Día
+              </button>
+            </div>
+          </div>
+
+          <!-- Columna Derecha: Ingredientes Escalados y Composición Nutricional -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="scale" style="color:var(--primary);"></i>
+                Ingredientes Escalados y Nutrientes
+              </h3>
+              <span class="chip" data-status="ok" id="recipeDinersBadge">Para 4 Personas</span>
+            </div>
+
+            <!-- Tabla de Ingredientes Escalados -->
+            <div class="card-title-sm">Ingredientes Necesarios</div>
+            <div class="clinical-table-wrapper" style="margin-bottom:var(--space-md); max-height:260px; overflow-y:auto;">
+              <table class="clinical-table">
+                <thead>
+                  <tr>
+                    <th>Ingrediente</th>
+                    <th>Peso Total (g)</th>
+                    <th>Medida Casera Estimada</th>
+                  </tr>
+                </thead>
+                <tbody id="recipeIngredientsBody">
+                  <!-- Se llena dinámicamente -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Desglose Nutricional por Porción Individual -->
+            <div class="card-title-sm">Aporte Nutricional por Porción Individual</div>
+            <div class="grid-3" style="font-size:0.84rem; gap:var(--space-xs);" id="recipeNutrientGrid">
+              <!-- Se llena dinámicamente -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 5: EDUCACIÓN EN ALIMENTACIÓN SALUDABLE -->
+      <!-- ========================================== -->
+      <section id="view-educacion" class="tab-view">
+        <div class="module-hero">
+          <h2 class="module-title">Educación en Alimentación Saludable</h2>
+          <p class="module-desc">
+            Guía visual del plato saludable, sistema de referencia corporal por manos (guía Luis Aravena), tabla de medidas caseras y educación sobre sellos y etiquetado nutricional.
+          </p>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:var(--space-lg);">
+          <!-- Plato Saludable Interactivo -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="disc" style="color:var(--primary);"></i>
+                ¡Así se debe ver tu plato!
+              </h3>
+              <span class="chip" data-status="ok">Modelo Educativo Visual</span>
+            </div>
+
+            <p style="font-size:0.88rem; color:var(--on-surface-variant); margin-bottom:var(--space-md);">
+              Haz clic o pasa el cursor sobre cada sección del plato para explorar sus características, porciones recomendadas y fundamentos de salud.
+            </p>
+
+            <div class="plate-svg-box">
+              <svg viewBox="0 0 320 320" width="100%" height="280" style="overflow:visible;" role="img" aria-label="Plato Saludable">
+                <!-- Plato exterior -->
+                <circle cx="160" cy="160" r="148" fill="#f8fafb" stroke="var(--outline-variant)" stroke-width="4" />
+                <circle cx="160" cy="160" r="132" fill="#ffffff" stroke="var(--outline-variant)" stroke-width="2" />
+
+                <!-- Sección Verduras (50% - Mitad Izquierda: 180° a 360°) -->
+                <path class="plate-slice" id="sliceVeg" d="M 160 28 A 132 132 0 0 0 160 292 Z" fill="#2e7d4f" fill-opacity="0.85" onclick="selectPlateSlice('veg')" />
+                <text x="95" y="165" fill="#ffffff" font-family="Figtree" font-weight="800" font-size="14" text-anchor="middle">VERDURAS</text>
+                <text x="95" y="185" fill="#ffffff" font-family="Figtree" font-weight="600" font-size="11" text-anchor="middle">1/2 del Plato</text>
+
+                <!-- Sección Proteínas (25% - Cuadrante Superior Derecho: 0° a 90°) -->
+                <path class="plate-slice" id="sliceProt" d="M 160 160 L 160 28 A 132 132 0 0 1 292 160 Z" fill="#0f7c8a" fill-opacity="0.85" onclick="selectPlateSlice('prot')" />
+                <text x="225" y="98" fill="#ffffff" font-family="Figtree" font-weight="800" font-size="13" text-anchor="middle">PROTEÍNA</text>
+                <text x="225" y="116" fill="#ffffff" font-family="Figtree" font-weight="600" font-size="10.5" text-anchor="middle">1/4 del Plato</text>
+
+                <!-- Sección Cereales (25% - Cuadrante Inferior Derecho: 90° a 180°) -->
+                <path class="plate-slice" id="sliceCereal" d="M 160 160 L 292 160 A 132 132 0 0 1 160 292 Z" fill="#b86e00" fill-opacity="0.85" onclick="selectPlateSlice('cereal')" />
+                <text x="225" y="218" fill="#ffffff" font-family="Figtree" font-weight="800" font-size="13" text-anchor="middle">CEREALES</text>
+                <text x="225" y="236" fill="#ffffff" font-family="Figtree" font-weight="600" font-size="10.5" text-anchor="middle">1/4 del Plato</text>
+
+                <!-- Icono Centro Aceite de Oliva y Agua -->
+                <circle cx="160" cy="160" r="26" fill="#ffffff" stroke="var(--primary)" stroke-width="2" />
+                <text x="160" y="164" fill="var(--primary)" font-family="Figtree" font-weight="800" font-size="9" text-anchor="middle">AOVE</text>
+                <text x="160" y="174" fill="var(--primary)" font-family="Figtree" font-weight="600" font-size="8" text-anchor="middle">+ AGUA</text>
+              </svg>
+
+              <!-- Detalle dinámico del sector seleccionado -->
+              <div id="plateSliceDetail" style="margin-top:var(--space-md); width:100%; padding:var(--space-md); background:var(--surface-container-low); border-radius:var(--rounded); border-left:4px solid var(--tertiary);">
+                <h4 id="sliceTitle" style="font-family:var(--font-headline); font-weight:700; color:var(--tertiary); margin-bottom:2px;">1/2 del Plato: Verduras y Hortalizas</h4>
+                <p id="sliceBody" style="font-size:0.86rem; color:var(--on-surface-variant); line-height:1.5;">
+                  Aportan gran volumen, fibra saciante, agua, antioxidantes y vitaminas. Se aconseja que al menos una porción diaria sea en forma cruda (ensaladas con hojas verdes, tomate, pimientos) complementada con verduras cocidas.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guía de Manos: Referencia Corporal de Porciones -->
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i data-lucide="hand" style="color:var(--primary);"></i>
+                Guía de Referencia por Manos
+              </h3>
+              <span class="chip" data-status="ok">Método Luis Aravena</span>
+            </div>
+
+            <p style="font-size:0.88rem; color:var(--on-surface-variant); margin-bottom:var(--space-md);">
+              Tus manos son una herramienta portátil y proporcional a tu contextura para estimar el tamaño de las porciones sin necesidad de balanza.
+            </p>
+
+            <div class="grid-3" style="gap:var(--space-sm);">
+              <!-- Dos Manos: Verduras -->
+              <div class="hand-card selected" onclick="selectHandGuide('veg')">
+                <div class="hand-icon-wrap" style="color:var(--tertiary); background:color-mix(in srgb, var(--tertiary) 15%, var(--background));">
+                  <i data-lucide="layers" style="width:32px;height:32px;"></i>
+                </div>
+                <strong style="font-family:var(--font-headline); font-size:0.9rem;">Dos Manos Juntas</strong>
+                <span style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Verduras y Ensaladas</span>
+              </div>
+
+              <!-- Puño: Frutas y Cereales -->
+              <div class="hand-card" onclick="selectHandGuide('fist')">
+                <div class="hand-icon-wrap" style="color:var(--warning); background:color-mix(in srgb, var(--warning) 15%, var(--background));">
+                  <i data-lucide="circle-dot" style="width:32px;height:32px;"></i>
+                </div>
+                <strong style="font-family:var(--font-headline); font-size:0.9rem;">1 Puño Cerrado</strong>
+                <span style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Frutas & Cereales/Pastas</span>
+              </div>
+
+              <!-- Palma: Proteínas -->
+              <div class="hand-card" onclick="selectHandGuide('palm')">
+                <div class="hand-icon-wrap" style="color:var(--primary); background:color-mix(in srgb, var(--primary) 15%, var(--background));">
+                  <i data-lucide="hand" style="width:32px;height:32px;"></i>
+                </div>
+                <strong style="font-family:var(--font-headline); font-size:0.9rem;">Palma de la Mano</strong>
+                <span style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Pescados, Carnes, Huevos</span>
+              </div>
+
+              <!-- Punta del Pulgar: Grasas -->
+              <div class="hand-card" onclick="selectHandGuide('thumb')">
+                <div class="hand-icon-wrap" style="color:#8b5e3c; background:color-mix(in srgb, #8b5e3c 15%, var(--background));">
+                  <i data-lucide="droplet" style="width:32px;height:32px;"></i>
+                </div>
+                <strong style="font-family:var(--font-headline); font-size:0.9rem;">Punta del Pulgar</strong>
+                <span style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Aceites, Mantequillas</span>
+              </div>
+
+              <!-- Puñado Ahuecado: Frutos Secos -->
+              <div class="hand-card" onclick="selectHandGuide('nuts')">
+                <div class="hand-icon-wrap" style="color:var(--data-4); background:color-mix(in srgb, var(--data-4) 15%, var(--background));">
+                  <i data-lucide="sparkles" style="width:32px;height:32px;"></i>
+                </div>
+                <strong style="font-family:var(--font-headline); font-size:0.9rem;">Puñado Ahuecado</strong>
+                <span style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Frutos Secos (20-30g)</span>
+              </div>
+            </div>
+
+            <!-- Detalle de la Mano Seleccionada -->
+            <div id="handDetailBox" style="margin-top:var(--space-md); padding:var(--space-md); background:var(--surface-container-low); border-radius:var(--rounded); border-left:4px solid var(--tertiary);">
+              <h4 id="handTitle" style="font-family:var(--font-headline); font-weight:700; color:var(--tertiary); margin-bottom:2px;">Dos Manos Juntas: Verduras (Abundantes)</h4>
+              <p id="handText" style="font-size:0.86rem; color:var(--on-surface-variant); line-height:1.5;">
+                Equivale a 2 tazas de verduras de hoja o 1 plato hondo colmado. Ideal para lechuga, acelga, achicoria, tomate, apio o pepino. No aportan exceso calórico y otorgan alta saciedad.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de Medidas Caseras & Equivalencias (Jury & Urteaga 1999) -->
+        <div class="panel-card" style="margin-bottom:var(--space-lg);">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="coffee" style="color:var(--primary);"></i>
+              Medidas Caseras y Equivalencias de Cocina
+            </h3>
+            <span class="chip" data-status="ok">Taza estándar 200 ml</span>
+          </div>
+
+          <div class="clinical-table-wrapper">
+            <table class="clinical-table">
+              <thead>
+                <tr>
+                  <th>Medida Casera</th>
+                  <th>Volumen Líquido</th>
+                  <th>Granos / Harinas</th>
+                  <th>Alimento de Ejemplo</th>
+                  <th>Porción de Intercambio Habitual</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>1 Taza</strong></td>
+                  <td>200 - 240 ml</td>
+                  <td>140 - 150 g</td>
+                  <td>Leche descremada, yogur, avena cruda</td>
+                  <td>1 porción de lácteo / 1 porción cereal cocido</td>
+                </tr>
+                <tr>
+                  <td><strong>3/4 Taza</strong></td>
+                  <td>150 - 180 ml</td>
+                  <td>105 - 115 g</td>
+                  <td>Arroz o fideos cocidos</td>
+                  <td>1 porción estándar de cereales</td>
+                </tr>
+                <tr>
+                  <td><strong>1/2 Taza</strong></td>
+                  <td>100 - 120 ml</td>
+                  <td>70 - 75 g</td>
+                  <td>Legumbres cocidas (garbanzos, lentejas)</td>
+                  <td>1 porción de legumbres</td>
+                </tr>
+                <tr>
+                  <td><strong>1 Cucharada Sopera Raza</strong></td>
+                  <td>10 - 15 ml</td>
+                  <td>10 - 12 g</td>
+                  <td>Aceite de oliva virgen extra, semillas</td>
+                  <td>1 porción de grasa saludable</td>
+                </tr>
+                <tr>
+                  <td><strong>1 Cucharadita de Té</strong></td>
+                  <td>5 ml</td>
+                  <td>4 - 5 g</td>
+                  <td>Miel, mantequilla, aceite</td>
+                  <td>1/2 porción de grasa / condimento</td>
+                </tr>
+                <tr>
+                  <td><strong>1 Unidad Mediana</strong></td>
+                  <td>-</td>
+                  <td>130 - 160 g</td>
+                  <td>Manzana, naranja, pera, huevo (55g)</td>
+                  <td>1 porción de fruta / 1 porción de proteína</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Etiquetado Nutricional: Sellos 'Alto En' vs. Dieta Mediterránea -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="tag" style="color:var(--primary);"></i>
+              Etiquetado Nutricional: Sellos 'Alto En' y Filosofía 'Más Mercado, Menos Supermercado'
+            </h3>
+          </div>
+
+          <div class="grid-2">
+            <div>
+              <h4 style="font-family:var(--font-headline); font-weight:700; color:var(--on-surface); margin-bottom:var(--space-xs);">Los 4 Sellos de Advertencia (Ley 20.606)</h4>
+              <p style="font-size:0.88rem; color:var(--on-surface-variant); margin-bottom:var(--space-sm);">
+                Identifican productos procesados o ultraprocesados a los que se ha adicionado sodio, azúcares libres, grasas saturadas o calorías por encima de los límites regulatorios por 100g.
+              </p>
+              <div style="display:flex; flex-direction:column; gap:var(--space-xs); font-size:0.85rem;">
+                <div style="background:var(--on-surface); color:#ffffff; padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+                  <span>ALTO EN AZÚCARES</span>
+                  <span>&gt; 10 g / 100 g</span>
+                </div>
+                <div style="background:var(--on-surface); color:#ffffff; padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+                  <span>ALTO EN GRASAS SATURADAS</span>
+                  <span>&gt; 4 g / 100 g</span>
+                </div>
+                <div style="background:var(--on-surface); color:#ffffff; padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+                  <span>ALTO EN SODIO</span>
+                  <span>&gt; 400 mg / 100 g</span>
+                </div>
+                <div style="background:var(--on-surface); color:#ffffff; padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm); display:flex; justify-content:space-between;">
+                  <span>ALTO EN CALORÍAS</span>
+                  <span>&gt; 275 kcal / 100 g</span>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="font-family:var(--font-headline); font-weight:700; color:var(--secondary); margin-bottom:var(--space-xs);">El Principio Mediterráneo: Cero Sellos Naturales</h4>
+              <p style="font-size:0.88rem; color:var(--on-surface-variant); line-height:1.5; margin-bottom:var(--space-sm);">
+                Los alimentos genuinos de la Dieta Mediterránea (frutas frescas, legumbres secas, hortalizas de temporada, pescados frescos, frutos secos al natural y aceite de oliva virgen extra) no llevan sellos porque carecen de ultraprocesamiento industrial.
+              </p>
+              <div style="background:var(--surface-container-low); border-left:4px solid var(--tertiary); padding:var(--space-md); border-radius:var(--rounded); font-size:0.86rem; color:var(--on-surface);">
+                <strong>Consejo del Dr. Ramón De Cangas & Lic. Luis Aravena:</strong><br>
+                <em>"Prioriza el mercado tradicional frente al supermercado. Nada está prohibido, pero la base alimentaria debe construirse con materias primas nobles, dejando la bollería y carnes procesadas para ocasiones extraordinarias."</em>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 6: ACTIVIDAD FÍSICA Y ESTILO DE VIDA (OMS) -->
+      <!-- ========================================== -->
+      <section id="view-actividad" class="tab-view">
+        <div class="module-hero">
+          <h2 class="module-title">Actividad Física y Estilo de Vida Activo</h2>
+          <p class="module-desc">
+            Directrices de la Organización Mundial de la Salud (OMS) para adultos y personas mayores: volumen aeróbico semanal, entrenamiento de fuerza, equilibrio funcional y reducción de conductas sedentarias.
+          </p>
+        </div>
+
+        <!-- Tarjetas de Recomendaciones Clave OMS -->
+        <div class="grid-3" style="margin-bottom:var(--space-lg);">
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Actividad Aeróbica Semanal</div>
+            <div class="card-num-large" style="color:var(--primary);">150 - 300 <span style="font-size:1rem; font-weight:600;">min</span></div>
+            <div class="card-subtext">
+              Intensidad moderada (o 75-150 min vigorosa, o combinación equivalente). Beneficios cardiovasculares y metabólicos demostrados.
+            </div>
+          </div>
+
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Fortalecimiento Muscular (Fuerza)</div>
+            <div class="card-num-large" style="color:var(--tertiary);">&ge; 2 - 3 <span style="font-size:1rem; font-weight:600;">días / sem</span></div>
+            <div class="card-subtext">
+              Ejercicios de intensidad moderada a alta para todos los grandes grupos musculares. Preserva masa magra y tasa metabólica.
+            </div>
+          </div>
+
+          <div class="status-card" data-status="ok">
+            <div class="card-title-sm">Multicomponente y Equilibrio</div>
+            <div class="card-num-large" style="color:var(--data-4);">&ge; 3 <span style="font-size:1rem; font-weight:600;">días / sem</span></div>
+            <div class="card-subtext">
+              Especialmente relevante en adultos mayores y prevención de fragilidad: combina equilibrio, coordinación y resistencia funcional.
+            </div>
+          </div>
+        </div>
+
+        <!-- Calculadora Interactiva de Cumplimiento Semanal -->
+        <div class="panel-card" style="margin-bottom:var(--space-lg);">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="calculator" style="color:var(--primary);"></i>
+              Calculadora Semanal de Actividad Física del Paciente
+            </h3>
+            <span class="chip" data-status="ok" id="activityAdequacyBadge">Cumple Meta OMS</span>
+          </div>
+
+          <div class="grid-2">
+            <!-- Entradas de Actividades -->
+            <div style="display:flex; flex-direction:column; gap:var(--space-sm);">
+              <div class="form-group">
+                <label class="form-label" for="actWalkMin">Caminata rápida / Traslado activo (Min/semana)</label>
+                <input type="number" id="actWalkMin" class="form-control" value="120" step="10" oninput="calculateActivityProgress()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="actModerateMin">Ejercicio Aeróbico Moderado (Bici, natación, baile - Min/semana)</label>
+                <input type="number" id="actModerateMin" class="form-control" value="60" step="15" oninput="calculateActivityProgress()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="actVigorousMin">Ejercicio Vigoroso / HIIT / Running (Min/semana)</label>
+                <input type="number" id="actVigorousMin" class="form-control" value="30" step="15" oninput="calculateActivityProgress()">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="actStrengthDays">Días de Entrenamiento de Fuerza (Pesas, autocarga)</label>
+                <select id="actStrengthDays" class="form-select" onchange="calculateActivityProgress()">
+                  <option value="0">0 días (Sedentario en fuerza)</option>
+                  <option value="1">1 día a la semana</option>
+                  <option value="2">2 días a la semana (Mínimo OMS)</option>
+                  <option value="3" selected>3 días a la semana (Óptimo)</option>
+                  <option value="4">4 días a la semana</option>
+                  <option value="5">5 o más días</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Panel de Resultados y Progreso -->
+            <div style="background:var(--surface-container-low); padding:var(--space-md); border-radius:var(--rounded); display:flex; flex-direction:column; justify-content:space-between;">
+              <div>
+                <div class="card-title-sm">Resumen Semanal Acumulado</div>
+                <div style="margin-top:var(--space-xs);">
+                  <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span style="font-weight:700;">Equivalente Aeróbico:</span>
+                    <span id="actTotalEquiv" style="font-family:var(--font-headline); font-weight:800; font-size:1.4rem; color:var(--primary);">240 min / sem</span>
+                  </div>
+                  <div class="meter-bar-bg" style="margin-top:4px;">
+                    <div id="actProgressBar" class="meter-bar-fill" style="width: 80%; background:var(--primary);"></div>
+                  </div>
+                  <div style="font-size:0.75rem; color:var(--on-surface-variant); margin-top:2px;">Meta base: 150 min · Meta óptima: 300 min</div>
+                </div>
+
+                <div style="margin-top:var(--space-md);">
+                  <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                    <span style="font-weight:700;">Fortalecimiento Muscular:</span>
+                    <span id="actStrengthLabel" style="font-family:var(--font-headline); font-weight:800; font-size:1.2rem; color:var(--tertiary);">3 días / sem</span>
+                  </div>
+                  <div class="chip" data-status="ok" id="actStrengthChip" style="margin-top:4px;">Objetivo de Fuerza Logrado</div>
+                </div>
+              </div>
+
+              <!-- Recomendación Clínica Generada -->
+              <div style="margin-top:var(--space-md); padding:var(--space-sm); background:var(--background); border-radius:var(--rounded-sm); border:1px solid var(--outline-variant); font-size:0.85rem;" id="actClinicalAdvice">
+                <strong>Pauta Nutricional de Apoyo:</strong> Excelente nivel de actividad física aeróbica y de fuerza. Mantener hidratación de 4-6 vasos de agua diarios y asegurar aporte proteico de 1.2 - 1.5 g/kg para síntesis muscular.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hábitos para Reducir el Sedentarismo -->
+        <div class="panel-card">
+          <div class="panel-card-header">
+            <h3 class="panel-card-title">
+              <i data-lucide="footprints" style="color:var(--primary);"></i>
+              Estrategias Clínicas para Romper Hábitos Sedentarios
+            </h3>
+          </div>
+          <div class="grid-3" style="font-size:0.86rem;">
+            <div style="background:var(--surface-container-low); padding:var(--space-md); border-radius:var(--rounded);">
+              <strong style="color:var(--primary); font-family:var(--font-headline);">Pausas Activas cada 60 Minutos</strong>
+              <p style="margin-top:4px; color:var(--on-surface-variant);">
+                Levantarse al menos 2 minutos por cada hora de sedestación reduce picos de glucemia postprandial y reactiva la circulación periférica.
+              </p>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-md); border-radius:var(--rounded);">
+              <strong style="color:var(--tertiary); font-family:var(--font-headline);">Movilidad Activa Cotidiana</strong>
+              <p style="margin-top:4px; color:var(--on-surface-variant);">
+                Preferir escaleras sobre ascensores, bajar una parada antes en el transporte público o realizar caminatas cortas durante llamadas telefónicas.
+              </p>
+            </div>
+            <div style="background:var(--surface-container-low); padding:var(--space-md); border-radius:var(--rounded);">
+              <strong style="color:var(--warning); font-family:var(--font-headline);">Descanso y Sueño Reparador</strong>
+              <p style="margin-top:4px; color:var(--on-surface-variant);">
+                Dormir entre 7 y 8 horas continuas. La privación del sueño eleva la grelina (apetito por ultraprocesados) y disminuye la sensibilidad a la insulina.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="background:var(--background); border-top:var(--card-border); padding:var(--space-md) var(--space-xl); margin-top:auto;">
+      <div style="max-width:1360px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-sm); font-size:0.82rem; color:var(--on-surface-variant);">
+        <div>
+          <strong>Nutri Gestor</strong> · Diseñado para la práctica clínica de <strong>Nutricionista Luis Aravena Juárez</strong>
+        </div>
+        <div>
+          Fuentes: TCQA 2018 · Pauta Dieta Mediterránea (Dr. Ramón De Cangas) · Directrices Actividad Física OMS
+        </div>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- API Shim for State Persistence -->
+  <api-shim></api-shim>
+
+  <!-- Application Logic & Data Script -->
+  <script>
+    // =========================================================================
+    // TCQA 2018 & MEDITERRANEAN FOOD COMPOSITION DATABASE (per 100g)
+    // =========================================================================
+    const TCQA_DATABASE = [
+      { id: 1, name: "Acelga cocida", cat: "verduras", gDef: 150, mDef: "1 taza cocida", kcal: 20, p: 1.3, cho: 2.0, fat: 0.1, fiber: 2.1, na: 179, ca: 58, fe: 2.3, vitC: 18.0, vitD: 0, omega3: 0.01 },
+      { id: 2, name: "Achicoria fresca", cat: "verduras", gDef: 80, mDef: "1 plato hondo", kcal: 23, p: 1.3, cho: 0.7, fat: 0.3, fiber: 4.0, na: 45, ca: 100, fe: 0.9, vitC: 24.0, vitD: 0, omega3: 0.05 },
+      { id: 3, name: "Ajo fresco", cat: "verduras", gDef: 5, mDef: "1 diente", kcal: 149, p: 6.4, cho: 31.0, fat: 0.5, fiber: 2.1, na: 17, ca: 181, fe: 1.7, vitC: 31.2, vitD: 0, omega3: 0.02 },
+      { id: 4, name: "Cebollín fresco", cat: "verduras", gDef: 30, mDef: "2 unidades", kcal: 32, p: 1.8, cho: 4.7, fat: 0.2, fiber: 2.6, na: 16, ca: 72, fe: 1.5, vitC: 18.8, vitD: 0, omega3: 0.03 },
+      { id: 5, name: "Champiñones shiitake", cat: "verduras", gDef: 100, mDef: "1 taza salteada", kcal: 56, p: 1.6, cho: 12.3, fat: 0.2, fiber: 2.1, na: 240, ca: 3, fe: 0.4, vitC: 0.3, vitD: 0.5, omega3: 0.01 },
+      { id: 6, name: "Espinacas frescas", cat: "verduras", gDef: 100, mDef: "2 tazas crudas", kcal: 23, p: 2.9, cho: 3.6, fat: 0.4, fiber: 2.2, na: 79, ca: 99, fe: 2.7, vitC: 28.1, vitD: 0, omega3: 0.14 },
+      { id: 7, name: "Tomate fresco", cat: "verduras", gDef: 120, mDef: "1 unidad mediana", kcal: 18, p: 0.9, cho: 3.9, fat: 0.2, fiber: 1.2, na: 5, ca: 10, fe: 0.3, vitC: 13.7, vitD: 0, omega3: 0.01 },
+      { id: 8, name: "Zanahoria cruda", cat: "verduras", gDef: 100, mDef: "1 unidad mediana", kcal: 41, p: 0.9, cho: 9.6, fat: 0.2, fiber: 2.8, na: 69, ca: 33, fe: 0.3, vitC: 5.9, vitD: 0, omega3: 0.01 },
+      { id: 9, name: "Betarraga cocida", cat: "verduras", gDef: 100, mDef: "1/2 taza en cubos", kcal: 43, p: 1.6, cho: 9.6, fat: 0.2, fiber: 2.8, na: 78, ca: 16, fe: 0.8, vitC: 4.9, vitD: 0, omega3: 0.01 },
+      { id: 10, name: "Lechuga escarola", cat: "verduras", gDef: 80, mDef: "1 plato hondo", kcal: 15, p: 1.4, cho: 2.8, fat: 0.2, fiber: 1.3, na: 28, ca: 36, fe: 0.9, vitC: 9.2, vitD: 0, omega3: 0.06 },
+      { id: 11, name: "Palta chilena (Aguacate)", cat: "aceites", gDef: 60, mDef: "3 cucharadas (1/3 un.)", kcal: 160, p: 2.0, cho: 8.5, fat: 14.7, fiber: 6.7, na: 7, ca: 12, fe: 0.6, vitC: 10.0, vitD: 0, omega3: 0.11 },
+
+      // FRUTAS
+      { id: 12, name: "Manzana con cáscara", cat: "frutas", gDef: 150, mDef: "1 unidad mediana", kcal: 52, p: 0.3, cho: 13.8, fat: 0.2, fiber: 2.4, na: 1, ca: 6, fe: 0.1, vitC: 4.6, vitD: 0, omega3: 0.01 },
+      { id: 13, name: "Naranja fresca", cat: "frutas", gDef: 160, mDef: "1 unidad grande", kcal: 47, p: 0.9, cho: 11.8, fat: 0.1, fiber: 2.4, na: 0, ca: 40, fe: 0.1, vitC: 53.2, vitD: 0, omega3: 0.01 },
+      { id: 14, name: "Frutillas frescas", cat: "frutas", gDef: 150, mDef: "1 taza", kcal: 32, p: 0.7, cho: 7.7, fat: 0.3, fiber: 2.0, na: 1, ca: 16, fe: 0.4, vitC: 58.8, vitD: 0, omega3: 0.07 },
+      { id: 15, name: "Plátano (Banana)", cat: "frutas", gDef: 100, mDef: "1 unidad chica", kcal: 89, p: 1.1, cho: 22.8, fat: 0.3, fiber: 2.6, na: 1, ca: 5, fe: 0.3, vitC: 8.7, vitD: 0, omega3: 0.03 },
+      { id: 16, name: "Clementina / Mandarina", cat: "frutas", gDef: 120, mDef: "2 unidades chicas", kcal: 44, p: 0.8, cho: 11.5, fat: 0.2, fiber: 1.8, na: 2, ca: 37, fe: 0.2, vitC: 36.0, vitD: 0, omega3: 0.02 },
+      { id: 17, name: "Kiwi fresco", cat: "frutas", gDef: 100, mDef: "1 unidad mediana", kcal: 61, p: 1.1, cho: 14.7, fat: 0.5, fiber: 3.0, na: 3, ca: 34, fe: 0.3, vitC: 92.7, vitD: 0, omega3: 0.04 },
+      { id: 18, name: "Arándanos frescos", cat: "frutas", gDef: 100, mDef: "3/4 taza", kcal: 57, p: 0.7, cho: 14.5, fat: 0.3, fiber: 2.4, na: 1, ca: 6, fe: 0.3, vitC: 9.7, vitD: 0, omega3: 0.06 },
+
+      // CEREALES Y TUBÉRCULOS
+      { id: 19, name: "Avena tradicional entera", cat: "cereales", gDef: 40, mDef: "6 cdas (1/2 taza)", kcal: 389, p: 16.9, cho: 66.3, fat: 6.9, fiber: 10.6, na: 2, ca: 54, fe: 4.7, vitC: 0, vitD: 0, omega3: 0.11 },
+      { id: 20, name: "Arroz integral cocido", cat: "cereales", gDef: 120, mDef: "3/4 taza", kcal: 112, p: 2.6, cho: 23.5, fat: 0.9, fiber: 1.8, na: 5, ca: 10, fe: 0.5, vitC: 0, vitD: 0, omega3: 0.02 },
+      { id: 21, name: "Arroz blanco cocido", cat: "cereales", gDef: 120, mDef: "3/4 taza", kcal: 130, p: 2.7, cho: 28.2, fat: 0.3, fiber: 0.4, na: 1, ca: 10, fe: 0.2, vitC: 0, vitD: 0, omega3: 0.01 },
+      { id: 22, name: "Pan marraqueta chilena", cat: "cereales", gDef: 50, mDef: "1/2 unidad", kcal: 265, p: 8.8, cho: 54.0, fat: 1.1, fiber: 2.7, na: 520, ca: 24, fe: 3.2, vitC: 0, vitD: 0, omega3: 0.03 },
+      { id: 23, name: "Pan de molde integral", cat: "cereales", gDef: 50, mDef: "2 rebanadas", kcal: 247, p: 12.0, cho: 42.0, fat: 3.4, fiber: 6.8, na: 430, ca: 60, fe: 2.8, vitC: 0, vitD: 0, omega3: 0.09 },
+      { id: 24, name: "Fideos integrales cocidos", cat: "cereales", gDef: 140, mDef: "1 taza", kcal: 124, p: 5.3, cho: 26.5, fat: 0.5, fiber: 3.9, na: 4, ca: 15, fe: 1.4, vitC: 0, vitD: 0, omega3: 0.03 },
+      { id: 25, name: "Papa cocida con piel", cat: "cereales", gDef: 150, mDef: "1 unidad mediana", kcal: 87, p: 1.9, cho: 20.1, fat: 0.1, fiber: 1.8, na: 6, ca: 12, fe: 0.8, vitC: 13.0, vitD: 0, omega3: 0.01 },
+      { id: 26, name: "Quinoa cocida", cat: "cereales", gDef: 130, mDef: "3/4 taza", kcal: 120, p: 4.4, cho: 21.3, fat: 1.9, fiber: 2.8, na: 7, ca: 17, fe: 1.5, vitC: 0, vitD: 0, omega3: 0.10 },
+
+      // LEGUMBRES
+      { id: 27, name: "Garbanzos cocidos", cat: "legumbres", gDef: 130, mDef: "3/4 taza", kcal: 164, p: 8.9, cho: 27.4, fat: 2.6, fiber: 7.6, na: 7, ca: 49, fe: 2.9, vitC: 1.3, vitD: 0, omega3: 0.05 },
+      { id: 28, name: "Lentejas cocidas", cat: "legumbres", gDef: 130, mDef: "3/4 taza", kcal: 116, p: 9.0, cho: 20.1, fat: 0.4, fiber: 7.9, na: 2, ca: 19, fe: 3.3, vitC: 1.5, vitD: 0, omega3: 0.04 },
+      { id: 29, name: "Porotos negros cocidos", cat: "legumbres", gDef: 130, mDef: "3/4 taza", kcal: 132, p: 8.9, cho: 23.7, fat: 0.5, fiber: 8.7, na: 1, ca: 27, fe: 2.1, vitC: 0, vitD: 0, omega3: 0.08 },
+
+      // PESCADOS Y MARISCOS
+      { id: 30, name: "Salmón fresco al horno", cat: "pescados", gDef: 120, mDef: "1 filete mediano", kcal: 206, p: 22.1, cho: 0.0, fat: 12.3, fiber: 0, na: 59, ca: 15, fe: 0.8, vitC: 0, vitD: 11.0, omega3: 2.26 },
+      { id: 31, name: "Merluza cocida / plancha", cat: "pescados", gDef: 120, mDef: "1 filete mediano", kcal: 86, p: 17.5, cho: 0.0, fat: 1.2, fiber: 0, na: 82, ca: 30, fe: 0.7, vitC: 0, vitD: 1.5, omega3: 0.35 },
+      { id: 32, name: "Trucha cocida", cat: "pescados", gDef: 120, mDef: "1 filete mediano", kcal: 131, p: 19.6, cho: 0.5, fat: 5.6, fiber: 0, na: 41, ca: 25, fe: 0.6, vitC: 0, vitD: 5.2, omega3: 0.94 },
+      { id: 33, name: "Atún al agua en conserva", cat: "pescados", gDef: 80, mDef: "1/2 lata escurrida", kcal: 116, p: 25.5, cho: 0.0, fat: 0.8, fiber: 0, na: 330, ca: 11, fe: 1.3, vitC: 0, vitD: 2.0, omega3: 0.28 },
+      { id: 34, name: "Centolla / Mariscos", cat: "pescados", gDef: 100, mDef: "1 porción pequeña", kcal: 87, p: 17.4, cho: 0.2, fat: 1.8, fiber: 0, na: 312, ca: 90, fe: 1.1, vitC: 2.0, vitD: 0.5, omega3: 0.42 },
+
+      // CARNES, AVES, HUEVOS Y VEG
+      { id: 35, name: "Pechuga de pollo cocida", cat: "carnes", gDef: 120, mDef: "1 filete palma mano", kcal: 165, p: 31.0, cho: 0.0, fat: 3.6, fiber: 0, na: 74, ca: 15, fe: 1.0, vitC: 0, vitD: 0.1, omega3: 0.07 },
+      { id: 36, name: "Pechuga de pavo filete", cat: "carnes", gDef: 120, mDef: "1 filete palma mano", kcal: 135, p: 29.5, cho: 0.0, fat: 1.6, fiber: 0, na: 68, ca: 14, fe: 1.2, vitC: 0, vitD: 0.1, omega3: 0.04 },
+      { id: 37, name: "Huevo de gallina entero", cat: "carnes", gDef: 55, mDef: "1 unidad", kcal: 143, p: 12.6, cho: 0.8, fat: 9.5, fiber: 0, na: 142, ca: 56, fe: 1.8, vitC: 0, vitD: 2.0, omega3: 0.12 },
+      { id: 38, name: "Clara de huevo cocida", cat: "carnes", gDef: 65, mDef: "2 claras", kcal: 52, p: 10.9, cho: 0.7, fat: 0.2, fiber: 0, na: 166, ca: 7, fe: 0.1, vitC: 0, vitD: 0, omega3: 0.00 },
+      { id: 39, name: "Posta negra (Vacuno magro)", cat: "carnes", gDef: 100, mDef: "1 bistec pequeño", kcal: 133, p: 21.6, cho: 0.0, fat: 4.8, fiber: 0, na: 58, ca: 10, fe: 2.6, vitC: 0, vitD: 0.1, omega3: 0.02 },
+      { id: 40, name: "Tofu firme", cat: "carnes", gDef: 100, mDef: "1 tajada gruesa", kcal: 78, p: 9.0, cho: 2.0, fat: 4.2, fiber: 0.9, na: 12, ca: 201, fe: 1.6, vitC: 0, vitD: 0, omega3: 0.25 },
+
+      // LÁCTEOS Y DERIVADOS
+      { id: 41, name: "Leche descremada fluida", cat: "lacteos", gDef: 200, mDef: "1 vaso o taza", kcal: 35, p: 3.4, cho: 4.9, fat: 0.1, fiber: 0, na: 50, ca: 122, fe: 0.1, vitC: 1.0, vitD: 1.2, omega3: 0.01 },
+      { id: 42, name: "Yogur natural sin azúcar", cat: "lacteos", gDef: 150, mDef: "1 pote individual", kcal: 59, p: 4.5, cho: 4.7, fat: 2.5, fiber: 0, na: 60, ca: 150, fe: 0.1, vitC: 0.8, vitD: 0.3, omega3: 0.03 },
+      { id: 43, name: "Quesillo fresco tradicional", cat: "lacteos", gDef: 60, mDef: "2 rebanadas (palma)", kcal: 104, p: 14.5, cho: 3.5, fat: 3.6, fiber: 0, na: 280, ca: 240, fe: 0.3, vitC: 0, vitD: 0.4, omega3: 0.02 },
+      { id: 44, name: "Ricotta / Requesón magro", cat: "lacteos", gDef: 60, mDef: "2 cdas colmadas", kcal: 138, p: 11.3, cho: 5.1, fat: 7.9, fiber: 0, na: 84, ca: 207, fe: 0.4, vitC: 0, vitD: 0.2, omega3: 0.05 },
+
+      // ACEITES, FRUTOS SECOS Y SEMILLAS
+      { id: 45, name: "Aceite de oliva virgen extra", cat: "aceites", gDef: 10, mDef: "1 cda sopera raza", kcal: 884, p: 0.0, cho: 0.0, fat: 100.0, fiber: 0, na: 2, ca: 1, fe: 0.4, vitC: 0, vitD: 0, omega3: 0.76 },
+      { id: 46, name: "Nueces chilenas secas", cat: "aceites", gDef: 25, mDef: "5 unidades mariposa", kcal: 654, p: 15.2, cho: 13.7, fat: 65.2, fiber: 6.7, na: 2, ca: 98, fe: 2.9, vitC: 1.3, vitD: 0, omega3: 9.08 },
+      { id: 47, name: "Almendras al natural", cat: "aceites", gDef: 25, mDef: "1 puñado (20 un.)", kcal: 579, p: 21.2, cho: 21.6, fat: 49.9, fiber: 12.5, na: 1, ca: 269, fe: 3.7, vitC: 0, vitD: 0, omega3: 0.01 },
+      { id: 48, name: "Semillas de chía crudas", cat: "aceites", gDef: 15, mDef: "1 cda sopera", kcal: 486, p: 16.5, cho: 42.1, fat: 30.7, fiber: 34.4, na: 16, ca: 631, fe: 7.7, vitC: 1.6, vitD: 0, omega3: 17.83 },
+      { id: 49, name: "Aceite de palta puro", cat: "aceites", gDef: 10, mDef: "1 cda sopera raza", kcal: 897, p: 0.0, cho: 0.0, fat: 99.4, fiber: 0, na: 0, ca: 0, fe: 0, vitC: 0, vitD: 0, omega3: 0.95 },
+      { id: 50, name: "Charqui vacuno tradicional", cat: "carnes", gDef: 30, mDef: "1 puñado desmenuzado", kcal: 382, p: 75.6, cho: 1.8, fat: 8.0, fiber: 0, na: 1477, ca: 28, fe: 4.8, vitC: 0, vitD: 0, omega3: 0.08 }
+    ];
+
+    // =========================================================================
+    // RECIPES CATALOG FROM GUIDES
+    // =========================================================================
+    const RECIPES_DB = [
+      {
+        id: "rec1",
+        name: "Ceviche de Salmón, Palta y Lechuga Fresca",
+        category: "Pescados & Mariscos",
+        desc: "Clásico plato del recetario mediterráneo-chileno. Rico en ácidos grasos omega-3 cardioprotectores (DHA/EPA), fitoquímicos y fibra soluble gracias a la palta y hojas tiernas.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 30, name: "Salmón fresco en cubos", baseGrams: 480, mDesc: "4 filetes medianos" },
+          { foodId: 11, name: "Palta en dados", baseGrams: 200, mDesc: "1 y 1/2 unidad" },
+          { foodId: 10, name: "Lechuga escarola picada", baseGrams: 240, mDesc: "3 platos hondos" },
+          { foodId: 4, name: "Cebollín picado fino", baseGrams: 60, mDesc: "4 unidades" },
+          { foodId: 45, name: "Aceite de oliva virgen extra", baseGrams: 20, mDesc: "2 cdas soperas" }
+        ]
+      },
+      {
+        id: "rec2",
+        name: "Guiso Tradicional de Garbanzos con Espinacas y Pimientos",
+        category: "Platos de Cuchara",
+        desc: "Plato de cuchara milenario. El Dr. Ramón De Cangas destaca la cocción lenta de legumbres para maximizar la fibra soluble, reducir colesterol LDL y estabilizar la glicemia.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 27, name: "Garbanzos cocidos tiernos", baseGrams: 520, mDesc: "3 tazas colmadas" },
+          { foodId: 6, name: "Espinacas frescas picadas", baseGrams: 300, mDesc: "1 paquete grande" },
+          { foodId: 3, name: "Ajo picado en láminas", baseGrams: 15, mDesc: "3 dientes" },
+          { foodId: 7, name: "Tomate triturado natural", baseGrams: 200, mDesc: "1 taza" },
+          { foodId: 45, name: "Aceite de oliva virgen extra", baseGrams: 25, mDesc: "2 y 1/2 cdas soperas" }
+        ]
+      },
+      {
+        id: "rec3",
+        name: "Merluza a la Cazuela con Cebolla, Tomate y Perejil",
+        category: "Pescados & Mariscos",
+        desc: "Pescado blanco magro preparado al vapor con verduras estofadas. Excelente aporte proteico de alto valor biológico con mínimo contenido graso, ideal para digestión ligera.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 31, name: "Merluza fresca en lomos", baseGrams: 500, mDesc: "4 trozos medianos" },
+          { foodId: 7, name: "Tomates maduros en rodajas", baseGrams: 240, mDesc: "2 unidades medianas" },
+          { foodId: 4, name: "Cebollín / Cebolla", baseGrams: 120, mDesc: "1 taza picada" },
+          { foodId: 25, name: "Papa al vapor en rodajas", baseGrams: 300, mDesc: "2 unidades medianas" },
+          { foodId: 45, name: "Aceite de oliva virgen extra", baseGrams: 20, mDesc: "2 cdas soperas" }
+        ]
+      },
+      {
+        id: "rec4",
+        name: "Crema Fría de Zanahorias, Pimentón y Cilantro",
+        category: "Sopas & Entradas",
+        desc: "Sopa fría estilo gazpacho mediterráneo. Rica en betacarotenos, provitamina A y vitamina C. Gran volumen de agua e hidratación celular con escasas calorías.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 8, name: "Zanahoria cocida al dente", baseGrams: 400, mDesc: "4 unidades grandes" },
+          { foodId: 3, name: "Diente de ajo asado", baseGrams: 8, mDesc: "2 dientes pequeños" },
+          { foodId: 45, name: "Aceite de oliva virgen extra", baseGrams: 25, mDesc: "2 y 1/2 cdas soperas" },
+          { foodId: 13, name: "Jugo de naranja natural", baseGrams: 100, mDesc: "1/2 vaso exprimido" }
+        ]
+      },
+      {
+        id: "rec5",
+        name: "Espirales Integrales con Pavo y Verduras al AOVE",
+        category: "Cereales & Carnes",
+        desc: "Combinación ideal de hidratos de carbono complejos de absorción lenta y proteína magra. Acompañada de hortalizas salteadas con aceite de oliva extra virgen.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 24, name: "Fideos integrales cocidos", baseGrams: 480, mDesc: "3 y 1/2 tazas" },
+          { foodId: 36, name: "Pechuga de pavo en dados", baseGrams: 400, mDesc: "4 porciones magras" },
+          { foodId: 1, name: "Acelga tierna salteada", baseGrams: 200, mDesc: "1 y 1/2 taza" },
+          { foodId: 5, name: "Champiñones salteados", baseGrams: 150, mDesc: "1 taza" },
+          { foodId: 45, name: "Aceite de oliva virgen extra", baseGrams: 25, mDesc: "2 y 1/2 cdas soperas" }
+        ]
+      },
+      {
+        id: "rec6",
+        name: "Copa Mediterránea de Yogur, Avena y Nueces",
+        category: "Desayunos & Postres",
+        desc: "Desayuno o colación de alta densidad nutricional: probióticos lácteos, fibra beta-glucano de la avena y ácidos grasos alfa-linolénico (ALA) de las nueces chilenas.",
+        baseDiners: 4,
+        ingredients: [
+          { foodId: 42, name: "Yogur natural sin azúcar", baseGrams: 600, mDesc: "4 potes individuales" },
+          { foodId: 19, name: "Avena tradicional laminada", baseGrams: 120, mDesc: "12 cdas soperas" },
+          { foodId: 12, name: "Manzana picada en cubos", baseGrams: 200, mDesc: "1 y 1/2 unidad" },
+          { foodId: 46, name: "Nueces chilenas picadas", baseGrams: 60, mDesc: "12 mariposas" }
+        ]
+      }
+    ];
+
+    // =========================================================================
+    // APPLICATION STATE
+    // =========================================================================
+    let appState = {
+      patient: {
+        name: "Ana Morales Gómez",
+        age: 34,
+        sex: "female",
+        weight: 68.5,
+        height: 162,
+        activityFactor: 1.375,
+        formula: "mifflin",
+        clinicalGoal: "deficit_moderate",
+        targetCalories: 1850,
+        macros: {
+          protPercent: 20,
+          choPercent: 50,
+          fatPercent: 30
+        }
+      },
+      currentMenu: [],
+      activeDiners: 4,
+      currentRecipeId: "rec1"
+    };
+
+    // Preset Data for quick loading
+    const PRESETS = {
+      standard: {
+        name: "Carlos Rivera (Adulto)",
+        age: 38,
+        sex: "male",
+        weight: 75.0,
+        height: 174,
+        activityFactor: 1.375,
+        formula: "mifflin",
+        clinicalGoal: "maintenance",
+        targetCalories: 1850,
+        protP: 20, choP: 50, fatP: 30
+      },
+      weight_loss: {
+        name: "María Paz Sepúlveda",
+        age: 42,
+        sex: "female",
+        weight: 78.0,
+        height: 160,
+        activityFactor: 1.2,
+        formula: "mifflin",
+        clinicalGoal: "deficit_moderate",
+        targetCalories: 1500,
+        protP: 25, choP: 45, fatP: 30
+      },
+      sports: {
+        name: "Felipe Oyarzún (Atleta)",
+        age: 26,
+        sex: "male",
+        weight: 74.0,
+        height: 178,
+        activityFactor: 1.725,
+        formula: "mifflin",
+        clinicalGoal: "surplus_mild",
+        targetCalories: 2400,
+        protP: 22, choP: 53, fatP: 25
+      },
+      cardio: {
+        name: "Raúl Contreras (Adulto Mayor)",
+        age: 67,
+        sex: "male",
+        weight: 71.0,
+        height: 168,
+        activityFactor: 1.2,
+        formula: "mifflin",
+        clinicalGoal: "maintenance",
+        targetCalories: 1700,
+        protP: 20, choP: 52, fatP: 28
+      }
+    };
+
+    // =========================================================================
+    // CORE CLINICAL CALCULATIONS
+    // =========================================================================
+    function calculateClinicalValues() {
+      const p = appState.patient;
+      const w = parseFloat(p.weight) || 70;
+      const h = parseFloat(p.height) || 170;
+      const age = parseInt(p.age) || 30;
+      const sex = p.sex;
+
+      // BMI
+      const hM = h / 100;
+      const bmi = w / (hM * hM);
+
+      // Ideal Body Weight (Hamwi/Metropolitan adapted: 22 for male, 21 for female)
+      const idealWeight = (sex === "male" ? 22 : 21) * (hM * hM);
+
+      // Adjusted Body Weight if Obese (BMI >= 30)
+      let adjWeight = idealWeight;
+      if (bmi >= 30) {
+        adjWeight = ((w - idealWeight) * 0.25) + idealWeight;
+      }
+
+      // GEB
+      let geb = 0;
+      if (p.formula === "mifflin") {
+        if (sex === "male") {
+          geb = (10 * w) + (6.25 * h) - (5 * age) + 5;
+        } else {
+          geb = (10 * w) + (6.25 * h) - (5 * age) - 161;
+        }
+      } else if (p.formula === "harris") {
+        if (sex === "male") {
+          geb = 66.47 + (13.75 * w) + (5.0 * h) - (6.76 * age);
+        } else {
+          geb = 655.1 + (9.56 * w) + (1.85 * h) - (4.68 * age);
+        }
+      } else {
+        // Empírico: 30 kcal/kg
+        geb = 30 * w;
+      }
+
+      // GET = GEB * Factor
+      const getVal = geb * parseFloat(p.activityFactor);
+
+      // Goal adjustment
+      let goalCalories = getVal;
+      if (p.clinicalGoal === "deficit_mild") goalCalories = getVal - 300;
+      else if (p.clinicalGoal === "deficit_moderate") goalCalories = getVal - 500;
+      else if (p.clinicalGoal === "surplus_mild") goalCalories = getVal + 300;
+
+      return {
+        bmi: bmi,
+        idealWeight: idealWeight,
+        adjWeight: adjWeight,
+        geb: Math.round(geb),
+        getVal: Math.round(getVal),
+        goalCalories: Math.round(goalCalories)
+      };
+    }
+
+    function updatePrescription() {
+      // Read DOM inputs into state
+      const nameEl = document.getElementById("patName");
+      const ageEl = document.getElementById("patAge");
+      const sexEl = document.getElementById("patSex");
+      const weightEl = document.getElementById("patWeight");
+      const heightEl = document.getElementById("patHeight");
+      const actEl = document.getElementById("patActivity");
+      const formEl = document.getElementById("patFormula");
+      const goalEl = document.getElementById("patClinicalGoal");
+
+      if (nameEl) appState.patient.name = nameEl.value;
+      if (ageEl) appState.patient.age = parseInt(ageEl.value) || 30;
+      if (sexEl) appState.patient.sex = sexEl.value;
+      if (weightEl) appState.patient.weight = parseFloat(weightEl.value) || 70;
+      if (heightEl) appState.patient.height = parseFloat(heightEl.value) || 170;
+      if (actEl) appState.patient.activityFactor = parseFloat(actEl.value);
+      if (formEl) appState.patient.formula = formEl.value;
+      if (goalEl) appState.patient.clinicalGoal = goalEl.value;
+
+      const calc = calculateClinicalValues();
+
+      // Render calculations to DOM
+      const bmiEl = document.getElementById("resBmi");
+      const bmiStatEl = document.getElementById("resBmiStatus");
+      const idWEl = document.getElementById("resIdealWeight");
+      const adjWEl = document.getElementById("resAdjWeight");
+      const gebEl = document.getElementById("resGeb");
+      const getEl = document.getElementById("resGetTotal");
+
+      if (bmiEl) bmiEl.textContent = calc.bmi.toFixed(1) + " kg/m²";
+      if (bmiStatEl) {
+        if (calc.bmi < 18.5) {
+          bmiStatEl.textContent = "Bajo Peso";
+          bmiStatEl.dataset.status = "alert";
+        } else if (calc.bmi < 25) {
+          bmiStatEl.textContent = "Normopeso";
+          bmiStatEl.dataset.status = "ok";
+        } else if (calc.bmi < 30) {
+          bmiStatEl.textContent = "Sobrepeso";
+          bmiStatEl.dataset.status = "warn";
+        } else {
+          bmiStatEl.textContent = "Obesidad";
+          bmiStatEl.dataset.status = "alert";
+        }
+      }
+
+      if (idWEl) idWEl.textContent = calc.idealWeight.toFixed(1) + " kg";
+      if (adjWEl) {
+        if (calc.bmi >= 30) {
+          adjWEl.textContent = "Ajustado: " + calc.adjWeight.toFixed(1) + " kg";
+        } else {
+          adjWEl.textContent = "Rango saludable OMS";
+        }
+      }
+
+      if (gebEl) gebEl.textContent = calc.geb.toLocaleString("es-CL") + " kcal";
+      if (getEl) getEl.textContent = "GET: " + calc.getVal.toLocaleString("es-CL") + " kcal";
+
+      // If clinical goal is not custom, auto-sync target calories
+      if (appState.patient.clinicalGoal !== "custom") {
+        appState.patient.targetCalories = calc.goalCalories;
+        const targetCalEl = document.getElementById("patTargetCalories");
+        if (targetCalEl) targetCalEl.value = calc.goalCalories;
+      }
+
+      // Update header bar
+      const topName = document.getElementById("topPatientName");
+      const topCal = document.getElementById("topCaloricGoal");
+      if (topName) topName.textContent = appState.patient.name;
+      if (topCal) topCal.textContent = appState.patient.targetCalories.toLocaleString("es-CL") + " kcal/d";
+
+      renderMacroSummaries();
+      renderMealTimings();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function onTargetCaloriesChange() {
+      const targetCalEl = document.getElementById("patTargetCalories");
+      if (!targetCalEl) return;
+      appState.patient.targetCalories = parseInt(targetCalEl.value) || 1800;
+      appState.patient.clinicalGoal = "custom";
+      const goalEl = document.getElementById("patClinicalGoal");
+      if (goalEl) goalEl.value = "custom";
+
+      const topCal = document.getElementById("topCaloricGoal");
+      if (topCal) topCal.textContent = appState.patient.targetCalories.toLocaleString("es-CL") + " kcal/d";
+
+      renderMacroSummaries();
+      renderMealTimings();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function syncTargetWithCalculated() {
+      const calc = calculateClinicalValues();
+      appState.patient.targetCalories = calc.goalCalories;
+      const targetCalEl = document.getElementById("patTargetCalories");
+      if (targetCalEl) targetCalEl.value = calc.goalCalories;
+      const goalEl = document.getElementById("patClinicalGoal");
+      if (goalEl && appState.patient.clinicalGoal === "custom") {
+        goalEl.value = "maintenance";
+        appState.patient.clinicalGoal = "maintenance";
+      }
+      updatePrescription();
+    }
+
+    function onMacroSliderChange(changedMacro) {
+      const pSlider = document.getElementById("protSlider");
+      const cSlider = document.getElementById("choSlider");
+      const fSlider = document.getElementById("fatSlider");
+
+      let pVal = parseInt(pSlider.value);
+      let cVal = parseInt(cSlider.value);
+      let fVal = parseInt(fSlider.value);
+
+      appState.patient.macros.protPercent = pVal;
+      appState.patient.macros.choPercent = cVal;
+      appState.patient.macros.fatPercent = fVal;
+
+      renderMacroSummaries();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function renderMacroSummaries() {
+      const totalKcal = appState.patient.targetCalories;
+      const w = appState.patient.weight;
+      const m = appState.patient.macros;
+
+      const pGrams = (totalKcal * (m.protPercent / 100)) / 4;
+      const cGrams = (totalKcal * (m.choPercent / 100)) / 4;
+      const fGrams = (totalKcal * (m.fatPercent / 100)) / 9;
+      const gPerKg = w > 0 ? (pGrams / w).toFixed(2) : "0";
+
+      const pSum = document.getElementById("protSummary");
+      const cSum = document.getElementById("choSummary");
+      const fSum = document.getElementById("fatSummary");
+      const pLbl = document.getElementById("protPercentLabel");
+      const cLbl = document.getElementById("choPercentLabel");
+      const fLbl = document.getElementById("fatPercentLabel");
+      const sumInd = document.getElementById("macroSumIndicator");
+
+      if (pSum) pSum.textContent = `${pGrams.toFixed(1)} g (${m.protPercent}% · ${gPerKg} g/kg)`;
+      if (cSum) cSum.textContent = `${cGrams.toFixed(1)} g (${m.choPercent}%)`;
+      if (fSum) fSum.textContent = `${fGrams.toFixed(1)} g (${m.fatPercent}%)`;
+
+      if (pLbl) pLbl.textContent = `${m.protPercent}%`;
+      if (cLbl) cLbl.textContent = `${m.choPercent}%`;
+      if (fLbl) fLbl.textContent = `${m.fatPercent}%`;
+
+      const sum = m.protPercent + m.choPercent + m.fatPercent;
+      if (sumInd) {
+        sumInd.textContent = `Suma total de distribución de macronutrientes: ${sum}%`;
+        if (sum === 100) {
+          sumInd.dataset.status = "ok";
+        } else {
+          sumInd.dataset.status = "alert";
+          sumInd.textContent += " (Debe sumar exactamente 100%)";
+        }
+      }
+
+      // Update Target Displays on Armador Tab
+      const tKcal = document.getElementById("targetKcalDisplay");
+      const tProt = document.getElementById("targetProtDisplay");
+      const tCho = document.getElementById("targetChoDisplay");
+      const tFat = document.getElementById("targetFatDisplay");
+
+      if (tKcal) tKcal.textContent = totalKcal.toLocaleString("es-CL");
+      if (tProt) tProt.textContent = Math.round(pGrams);
+      if (tCho) tCho.textContent = Math.round(cGrams);
+      if (tFat) tFat.textContent = Math.round(fGrams);
+    }
+
+    function renderMealTimings() {
+      const totalKcal = appState.patient.targetCalories;
+      const meal1 = document.getElementById("mealKcal1");
+      const meal2 = document.getElementById("mealKcal2");
+      const meal3 = document.getElementById("mealKcal3");
+      const meal4 = document.getElementById("mealKcal4");
+      const meal5 = document.getElementById("mealKcal5");
+
+      if (meal1) meal1.textContent = Math.round(totalKcal * 0.20);
+      if (meal2) meal2.textContent = Math.round(totalKcal * 0.10);
+      if (meal3) meal3.textContent = Math.round(totalKcal * 0.35);
+      if (meal4) meal4.textContent = Math.round(totalKcal * 0.15);
+      if (meal5) meal5.textContent = Math.round(totalKcal * 0.20);
+    }
+
+    function loadPatientPreset(key) {
+      const preset = PRESETS[key];
+      if (!preset) return;
+
+      document.getElementById("patName").value = preset.name;
+      document.getElementById("patAge").value = preset.age;
+      document.getElementById("patSex").value = preset.sex;
+      document.getElementById("patWeight").value = preset.weight;
+      document.getElementById("patHeight").value = preset.height;
+      document.getElementById("patActivity").value = preset.activityFactor;
+      document.getElementById("patFormula").value = preset.formula;
+      document.getElementById("patClinicalGoal").value = preset.clinicalGoal;
+      document.getElementById("patTargetCalories").value = preset.targetCalories;
+
+      document.getElementById("protSlider").value = preset.protP;
+      document.getElementById("choSlider").value = preset.choP;
+      document.getElementById("fatSlider").value = preset.fatP;
+
+      appState.patient.name = preset.name;
+      appState.patient.age = preset.age;
+      appState.patient.sex = preset.sex;
+      appState.patient.weight = preset.weight;
+      appState.patient.height = preset.height;
+      appState.patient.activityFactor = preset.activityFactor;
+      appState.patient.formula = preset.formula;
+      appState.patient.clinicalGoal = preset.clinicalGoal;
+      appState.patient.targetCalories = preset.targetCalories;
+      appState.patient.macros.protPercent = preset.protP;
+      appState.patient.macros.choPercent = preset.choP;
+      appState.patient.macros.fatPercent = preset.fatP;
+
+      updatePrescription();
+    }
+
+    // =========================================================================
+    // TAB 2: MENU BUILDER & TCQA 2018 LOGIC
+    // =========================================================================
+    function renderFoodCatalog() {
+      const listEl = document.getElementById("foodCatalogList");
+      if (!listEl) return;
+
+      const searchInput = document.getElementById("foodSearchInput");
+      const categoryFilter = document.getElementById("foodCategoryFilter");
+
+      const query = (searchInput ? searchInput.value : "").toLowerCase().trim();
+      const cat = categoryFilter ? categoryFilter.value : "all";
+
+      const filtered = TCQA_DATABASE.filter(f => {
+        const matchesQuery = f.name.toLowerCase().includes(query) || f.mDef.toLowerCase().includes(query);
+        const matchesCat = (cat === "all" || f.cat === cat);
+        return matchesQuery && matchesCat;
+      });
+
+      const countChip = document.getElementById("foodCountChip");
+      if (countChip) countChip.textContent = `${filtered.length} Alimentos`;
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = `<div style="text-align:center; padding:var(--space-lg); color:var(--on-surface-variant); font-size:0.9rem;">No se encontraron alimentos que coincidan.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = filtered.map(f => {
+        return `
+          <div style="background:var(--background); border:1px solid var(--outline-variant); border-radius:var(--rounded-sm); padding:var(--space-sm); display:flex; justify-content:space-between; align-items:center; gap:var(--space-sm);">
+            <div style="flex:1;">
+              <div style="font-weight:700; font-size:0.88rem; color:var(--on-surface);">${f.name}</div>
+              <div style="font-size:0.75rem; color:var(--on-surface-variant);">
+                Porción habitual: <strong>${f.gDef}g (${f.mDef})</strong> · ${Math.round((f.kcal * f.gDef)/100)} kcal · P: ${((f.p * f.gDef)/100).toFixed(1)}g
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:var(--space-xs);">
+              <input type="number" id="gramsInput_${f.id}" value="${f.gDef}" min="5" max="1000" step="5" style="width:60px; padding:2px 4px; font-size:0.8rem; border:1px solid var(--outline); border-radius:var(--rounded-sm); text-align:center;">
+              <span style="font-size:0.75rem; color:var(--on-surface-variant);">g</span>
+              <button class="btn btn-secondary btn-sm" onclick="addFoodToMenu(${f.id})" title="Añadir al tiempo de comida seleccionado">
+                + Añadir
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function addFoodToMenu(foodId) {
+      const food = TCQA_DATABASE.find(item => item.id === foodId);
+      if (!food) return;
+
+      const gramsInput = document.getElementById(`gramsInput_${foodId}`);
+      const grams = gramsInput ? (parseInt(gramsInput.value) || food.gDef) : food.gDef;
+
+      const targetMealSelect = document.getElementById("targetMealSlot");
+      const mealName = targetMealSelect ? targetMealSelect.value : "Almuerzo";
+
+      appState.currentMenu.push({
+        uid: Date.now() + Math.random().toString(36).substring(2, 6),
+        foodId: food.id,
+        name: food.name,
+        meal: mealName,
+        grams: grams,
+        unitDesc: food.mDef
+      });
+
+      renderDayMenu();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function removeMenuItem(uid) {
+      appState.currentMenu = appState.currentMenu.filter(item => item.uid !== uid);
+      renderDayMenu();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function updateItemGrams(uid, newGrams) {
+      const g = parseInt(newGrams);
+      if (isNaN(g) || g <= 0) return;
+      const item = appState.currentMenu.find(i => i.uid === uid);
+      if (item) {
+        item.grams = g;
+        renderDayMenu();
+        updateAdequacyMeters();
+        saveStateDebounced();
+      }
+    }
+
+    function renderDayMenu() {
+      const container = document.getElementById("dayMenuList");
+      if (!container) return;
+
+      if (appState.currentMenu.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:var(--space-2xl) var(--space-md); color:var(--on-surface-variant);">
+            <i data-lucide="utensils" style="width:40px; height:40px; color:var(--outline); margin-bottom:var(--space-sm);"></i>
+            <div style="font-weight:700; font-size:1rem; color:var(--on-surface);">Menú del Día Vacío</div>
+            <p style="font-size:0.85rem; max-width:40ch; margin:0 auto; margin-top:4px;">
+              Selecciona alimentos de la base TCQA 2018 o presiona "Cargar Pauta Modelo" para visualizar un plan mediterráneo equilibrado.
+            </p>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      const mealSlots = ["Desayuno", "Colación", "Almuerzo", "Once", "Cena"];
+
+      container.innerHTML = mealSlots.map(slot => {
+        const items = appState.currentMenu.filter(i => i.meal === slot);
+        if (items.length === 0) return "";
+
+        let slotKcal = 0;
+        let slotProt = 0;
+        let slotCho = 0;
+        let slotFat = 0;
+
+        const itemsHtml = items.map(item => {
+          const food = TCQA_DATABASE.find(f => f.id === item.foodId);
+          if (!food) return "";
+
+          const factor = item.grams / 100;
+          const k = food.kcal * factor;
+          const p = food.p * factor;
+          const c = food.cho * factor;
+          const f = food.fat * factor;
+
+          slotKcal += k;
+          slotProt += p;
+          slotCho += c;
+          slotFat += f;
+
+          return `
+            <div style="background:var(--background); border:1px solid var(--outline-variant); border-radius:var(--rounded-sm); padding:var(--space-xs) var(--space-sm); display:flex; justify-content:space-between; align-items:center; font-size:0.84rem;">
+              <div style="flex:1;">
+                <div style="font-weight:700; color:var(--on-surface);">${item.name}</div>
+                <div style="font-size:0.75rem; color:var(--on-surface-variant);">
+                  ${Math.round(k)} kcal · P: ${p.toFixed(1)}g · C: ${c.toFixed(1)}g · L: ${f.toFixed(1)}g
+                </div>
+              </div>
+              <div style="display:flex; align-items:center; gap:var(--space-xs);">
+                <input type="number" value="${item.grams}" min="5" max="1500" step="5" style="width:55px; font-size:0.8rem; border:1px solid var(--outline); border-radius:var(--rounded-sm); text-align:center;" onchange="updateItemGrams('${item.uid}', this.value)">
+                <span style="font-size:0.75rem; color:var(--on-surface-variant);">g</span>
+                <button class="btn btn-secondary btn-sm" style="color:var(--error); padding:2px 6px;" onclick="removeMenuItem('${item.uid}')" title="Eliminar alimento">✕</button>
+              </div>
+            </div>
+          `;
+        }).join("");
+
+        return `
+          <div style="background:var(--surface-container-low); border:1px solid var(--outline-variant); border-radius:var(--rounded); padding:var(--space-sm) var(--space-md);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-xs); border-bottom:1px solid var(--outline-variant); padding-bottom:4px;">
+              <strong style="font-family:var(--font-headline); font-size:0.9rem; color:var(--primary);">${slot}</strong>
+              <span style="font-size:0.75rem; font-weight:700; color:var(--on-surface-variant);">
+                ${Math.round(slotKcal)} kcal · P: ${slotProt.toFixed(1)}g · C: ${slotCho.toFixed(1)}g · L: ${slotFat.toFixed(1)}g
+              </span>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              ${itemsHtml}
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    function clearDayMenu() {
+      appState.currentMenu = [];
+      renderDayMenu();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function loadSampleDayMenu() {
+      // Pauta mediterránea modelo equilibrada (~1.850 kcal)
+      appState.currentMenu = [
+        // Desayuno
+        { uid: "m1", foodId: 42, name: "Yogur natural sin azúcar", meal: "Desayuno", grams: 150 },
+        { uid: "m2", foodId: 19, name: "Avena tradicional entera", meal: "Desayuno", grams: 40 },
+        { uid: "m3", foodId: 12, name: "Manzana con cáscara", meal: "Desayuno", grams: 150 },
+        { uid: "m4", foodId: 46, name: "Nueces chilenas secas", meal: "Desayuno", grams: 20 },
+
+        // Colación
+        { uid: "m5", foodId: 16, name: "Clementina / Mandarina", meal: "Colación", grams: 140 },
+
+        // Almuerzo
+        { uid: "m6", foodId: 27, name: "Garbanzos cocidos", meal: "Almuerzo", grams: 150 },
+        { uid: "m7", foodId: 6, name: "Espinacas frescas", meal: "Almuerzo", grams: 120 },
+        { uid: "m8", foodId: 7, name: "Tomate fresco", meal: "Almuerzo", grams: 120 },
+        { uid: "m9", foodId: 45, name: "Aceite de oliva virgen extra", meal: "Almuerzo", grams: 15 },
+        { uid: "m10", foodId: 13, name: "Naranja fresca", meal: "Almuerzo", grams: 160 },
+
+        // Once
+        { uid: "m11", foodId: 41, name: "Leche descremada fluida", meal: "Once", grams: 200 },
+        { uid: "m12", foodId: 23, name: "Pan de molde integral", meal: "Once", grams: 50 },
+        { uid: "m13", foodId: 43, name: "Quesillo fresco tradicional", meal: "Once", grams: 60 },
+
+        // Cena
+        { uid: "m14", foodId: 30, name: "Salmón fresco al horno", meal: "Cena", grams: 130 },
+        { uid: "m15", foodId: 1, name: "Acelga cocida", meal: "Cena", grams: 160 },
+        { uid: "m16", foodId: 25, name: "Papa cocida con piel", meal: "Cena", grams: 120 },
+        { uid: "m17", foodId: 45, name: "Aceite de oliva virgen extra", meal: "Cena", grams: 10 }
+      ];
+
+      renderDayMenu();
+      updateAdequacyMeters();
+      saveStateDebounced();
+    }
+
+    function calculateMenuNutrients() {
+      let totals = {
+        kcal: 0, p: 0, cho: 0, fat: 0,
+        fiber: 0, na: 0, ca: 0, fe: 0,
+        vitC: 0, vitD: 0, omega3: 0
+      };
+
+      appState.currentMenu.forEach(item => {
+        const food = TCQA_DATABASE.find(f => f.id === item.foodId);
+        if (!food) return;
+
+        const f = item.grams / 100;
+        totals.kcal += food.kcal * f;
+        totals.p += food.p * f;
+        totals.cho += food.cho * f;
+        totals.fat += food.fat * f;
+        totals.fiber += food.fiber * f;
+        totals.na += food.na * f;
+        totals.ca += food.ca * f;
+        totals.fe += food.fe * f;
+        totals.vitC += food.vitC * f;
+        totals.vitD += food.vitD * f;
+        totals.omega3 += food.omega3 * f;
+      });
+
+      return totals;
+    }
+
+    function updateAdequacyMeters() {
+      const totals = calculateMenuNutrients();
+      const targetCal = appState.patient.targetCalories || 1850;
+      const targetP = (targetCal * (appState.patient.macros.protPercent / 100)) / 4;
+      const targetC = (targetCal * (appState.patient.macros.choPercent / 100)) / 4;
+      const targetF = (targetCal * (appState.patient.macros.fatPercent / 100)) / 9;
+
+      // DOM Elements for Totals
+      const sumKcalEl = document.getElementById("sumKcal");
+      const sumProtEl = document.getElementById("sumProt");
+      const sumChoEl = document.getElementById("sumCho");
+      const sumFatEl = document.getElementById("sumFat");
+
+      if (sumKcalEl) sumKcalEl.textContent = Math.round(totals.kcal).toLocaleString("es-CL");
+      if (sumProtEl) sumProtEl.textContent = Math.round(totals.p);
+      if (sumChoEl) sumChoEl.textContent = Math.round(totals.cho);
+      if (sumFatEl) sumFatEl.textContent = Math.round(totals.fat);
+
+      // Adequacy Percentages
+      const adeqKcal = targetCal > 0 ? (totals.kcal / targetCal) * 100 : 0;
+      const adeqP = targetP > 0 ? (totals.p / targetP) * 100 : 0;
+      const adeqC = targetC > 0 ? (totals.cho / targetC) * 100 : 0;
+      const adeqF = targetF > 0 ? (totals.fat / targetF) * 100 : 0;
+
+      // Status helper
+      function getStatus(val) {
+        if (val >= 90 && val <= 110) return "ok";
+        if ((val >= 80 && val < 90) || (val > 110 && val <= 120)) return "warn";
+        return "alert";
+      }
+
+      // Update Cards
+      const cardKcal = document.getElementById("cardAdeqKcal");
+      const barKcal = document.getElementById("barKcal");
+      const statKcal = document.getElementById("statusKcalText");
+      if (cardKcal) cardKcal.dataset.status = getStatus(adeqKcal);
+      if (barKcal) barKcal.style.width = Math.min(adeqKcal, 100) + "%";
+      if (statKcal) statKcal.textContent = `Adecuación: ${adeqKcal.toFixed(1)}%`;
+
+      const cardProt = document.getElementById("cardAdeqProt");
+      const barProt = document.getElementById("barProt");
+      const statProt = document.getElementById("statusProtText");
+      if (cardProt) cardProt.dataset.status = getStatus(adeqP);
+      if (barProt) barProt.style.width = Math.min(adeqP, 100) + "%";
+      if (statProt) statProt.textContent = `Adecuación: ${adeqP.toFixed(1)}%`;
+
+      const cardCho = document.getElementById("cardAdeqCho");
+      const barCho = document.getElementById("barCho");
+      const statCho = document.getElementById("statusChoText");
+      if (cardCho) cardCho.dataset.status = getStatus(adeqC);
+      if (barCho) barCho.style.width = Math.min(adeqC, 100) + "%";
+      if (statCho) statCho.textContent = `Adecuación: ${adeqC.toFixed(1)}%`;
+
+      const cardFat = document.getElementById("cardAdeqFat");
+      const barFat = document.getElementById("barFat");
+      const statFat = document.getElementById("statusFatText");
+      if (cardFat) cardFat.dataset.status = getStatus(adeqF);
+      if (barFat) barFat.style.width = Math.min(adeqF, 100) + "%";
+      if (statFat) statFat.textContent = `Adecuación: ${adeqF.toFixed(1)}%`;
+
+      // Top Quick Badge
+      const topBadge = document.getElementById("topAdequacyBadge");
+      const topPercent = document.getElementById("topAdequacyPercent");
+      if (topBadge && topPercent) {
+        topPercent.textContent = `${adeqKcal.toFixed(1)}%`;
+        topBadge.dataset.status = getStatus(adeqKcal);
+      }
+
+      // Micronutrients
+      const sFiber = document.getElementById("sumFiber");
+      const sNa = document.getElementById("sumSodium");
+      const sCa = document.getElementById("sumCalcium");
+      const sFe = document.getElementById("sumIron");
+      const sVitC = document.getElementById("sumVitC");
+      const sOm3 = document.getElementById("sumOmega3");
+
+      if (sFiber) sFiber.textContent = totals.fiber.toFixed(1);
+      if (sNa) sNa.textContent = Math.round(totals.na);
+      if (sCa) sCa.textContent = Math.round(totals.ca);
+      if (sFe) sFe.textContent = totals.fe.toFixed(1);
+      if (sVitC) sVitC.textContent = Math.round(totals.vitC);
+      if (sOm3) sOm3.textContent = totals.omega3.toFixed(2);
+
+      // Micro Badges
+      const bFiber = document.getElementById("badgeFiber");
+      if (bFiber) bFiber.dataset.status = totals.fiber >= 25 ? "ok" : "warn";
+
+      const bNa = document.getElementById("badgeSodium");
+      if (bNa) bNa.dataset.status = totals.na <= 2000 ? "ok" : "alert";
+
+      const bCa = document.getElementById("badgeCalcium");
+      if (bCa) bCa.dataset.status = totals.ca >= 900 ? "ok" : "warn";
+
+      const bFe = document.getElementById("badgeIron");
+      if (bFe) bFe.dataset.status = totals.fe >= 14 ? "ok" : "warn";
+
+      const bVitC = document.getElementById("badgeVitC");
+      if (bVitC) bVitC.dataset.status = totals.vitC >= 75 ? "ok" : "warn";
+
+      const bOm3 = document.getElementById("badgeOmega3");
+      if (bOm3) bOm3.dataset.status = totals.omega3 >= 0.5 ? "ok" : "warn";
+    }
+
+    // =========================================================================
+    // TAB 4: RECIPE SCALER
+    // =========================================================================
+    function renderRecipeDetail() {
+      const recSelector = document.getElementById("recipeSelector");
+      if (!recSelector) return;
+
+      const recId = recSelector.value;
+      appState.currentRecipeId = recId;
+      const recipe = RECIPES_DB.find(r => r.id === recId);
+      if (!recipe) return;
+
+      const dinersInput = document.getElementById("recipeDinersInput");
+      const diners = dinersInput ? (parseInt(dinersInput.value) || 4) : 4;
+      appState.activeDiners = diners;
+
+      // Update Diners Badge
+      const dinersBadge = document.getElementById("recipeDinersBadge");
+      if (dinersBadge) dinersBadge.textContent = `Para ${diners} ${diners === 1 ? "Persona" : "Personas"}`;
+
+      // Description
+      const descEl = document.getElementById("recipeDescriptionBlock");
+      if (descEl) {
+        descEl.innerHTML = `
+          <strong>Categoría:</strong> ${recipe.category}<br>
+          <p style="margin-top:4px;">${recipe.desc}</p>
+        `;
+      }
+
+      // Ingredients Scaling
+      const multiplier = diners / recipe.baseDiners;
+      const ingBody = document.getElementById("recipeIngredientsBody");
+
+      let totalBatchNutrients = { kcal: 0, p: 0, cho: 0, fat: 0, fiber: 0, na: 0, ca: 0, fe: 0, vitC: 0, omega3: 0 };
+
+      if (ingBody) {
+        ingBody.innerHTML = recipe.ingredients.map(ing => {
+          const scaledGrams = Math.round(ing.baseGrams * multiplier);
+          const food = TCQA_DATABASE.find(f => f.id === ing.foodId);
+
+          if (food) {
+            const f = scaledGrams / 100;
+            totalBatchNutrients.kcal += food.kcal * f;
+            totalBatchNutrients.p += food.p * f;
+            totalBatchNutrients.cho += food.cho * f;
+            totalBatchNutrients.fat += food.fat * f;
+            totalBatchNutrients.fiber += food.fiber * f;
+            totalBatchNutrients.na += food.na * f;
+            totalBatchNutrients.ca += food.ca * f;
+            totalBatchNutrients.fe += food.fe * f;
+            totalBatchNutrients.vitC += food.vitC * f;
+            totalBatchNutrients.omega3 += food.omega3 * f;
+          }
+
+          // Scale household measure descriptor roughly
+          let scaledMeasure = ing.mDesc;
+          if (multiplier !== 1) {
+            scaledMeasure += ` (x${multiplier.toFixed(1)})`;
+          }
+
+          return `
+            <tr>
+              <td><strong>${ing.name}</strong></td>
+              <td>${scaledGrams} g</td>
+              <td>${scaledMeasure}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      // Nutrients per single serving
+      const perServing = {
+        kcal: Math.round(totalBatchNutrients.kcal / diners),
+        p: (totalBatchNutrients.p / diners).toFixed(1),
+        cho: (totalBatchNutrients.cho / diners).toFixed(1),
+        fat: (totalBatchNutrients.fat / diners).toFixed(1),
+        fiber: (totalBatchNutrients.fiber / diners).toFixed(1),
+        na: Math.round(totalBatchNutrients.na / diners),
+        ca: Math.round(totalBatchNutrients.ca / diners),
+        fe: (totalBatchNutrients.fe / diners).toFixed(1),
+        vitC: Math.round(totalBatchNutrients.vitC / diners),
+        omega3: (totalBatchNutrients.omega3 / diners).toFixed(2)
+      };
+
+      const nutGrid = document.getElementById("recipeNutrientGrid");
+      if (nutGrid) {
+        nutGrid.innerHTML = `
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Energía:</strong> ${perServing.kcal} kcal
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Proteínas:</strong> ${perServing.p} g
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Carbohidratos:</strong> ${perServing.cho} g
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Lípidos:</strong> ${perServing.fat} g
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Fibra:</strong> ${perServing.fiber} g
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Omega-3:</strong> ${perServing.omega3} g
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Sodio:</strong> ${perServing.na} mg
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Calcio:</strong> ${perServing.ca} mg
+          </div>
+          <div style="background:var(--surface-container-low); padding:var(--space-xs) var(--space-sm); border-radius:var(--rounded-sm);">
+            <strong>Hierro:</strong> ${perServing.fe} mg
+          </div>
+        `;
+      }
+    }
+
+    function adjustDiners(delta) {
+      const inp = document.getElementById("recipeDinersInput");
+      if (!inp) return;
+      let val = (parseInt(inp.value) || 4) + delta;
+      if (val < 1) val = 1;
+      if (val > 50) val = 50;
+      inp.value = val;
+      renderRecipeDetail();
+    }
+
+    function setDiners(num) {
+      const inp = document.getElementById("recipeDinersInput");
+      if (!inp) return;
+      inp.value = num;
+      renderRecipeDetail();
+    }
+
+    function addCurrentRecipeToMeal() {
+      const recipe = RECIPES_DB.find(r => r.id === appState.currentRecipeId);
+      if (!recipe) return;
+
+      // Add each ingredient scaled to 1 individual portion into "Almuerzo"
+      recipe.ingredients.forEach(ing => {
+        const singleGrams = Math.round(ing.baseGrams / recipe.baseDiners);
+        appState.currentMenu.push({
+          uid: Date.now() + Math.random().toString(36).substring(2, 6),
+          foodId: ing.foodId,
+          name: `${ing.name} (${recipe.name.substring(0, 16)}...)`,
+          meal: "Almuerzo",
+          grams: singleGrams,
+          unitDesc: ing.mDesc
+        });
+      });
+
+      renderDayMenu();
+      updateAdequacyMeters();
+      saveStateDebounced();
+
+      // Show notification / switch to armador
+      switchTab("armador");
+    }
+
+    // =========================================================================
+    // TAB 5: EDUCACIÓN ALIMENTARIA INTERACTIVA
+    // =========================================================================
+    function selectPlateSlice(type) {
+      const titleEl = document.getElementById("sliceTitle");
+      const bodyEl = document.getElementById("sliceBody");
+      const container = document.getElementById("plateSliceDetail");
+
+      if (type === "veg") {
+        if (titleEl) titleEl.textContent = "1/2 del Plato: Verduras y Hortalizas";
+        if (titleEl) titleEl.style.color = "var(--tertiary)";
+        if (container) container.style.borderLeftColor = "var(--tertiary)";
+        if (bodyEl) bodyEl.textContent = "Aportan gran volumen, agua, fibra saciante, antioxidantes y minerales. Se recomienda consumir al menos 2 raciones al día (unos 400g diarios), procurando que al menos una de ellas sea cruda (ensalada de hojas verdes, tomate, cebollín).";
+      } else if (type === "prot") {
+        if (titleEl) titleEl.textContent = "1/4 del Plato: Proteínas de Calidad";
+        if (titleEl) titleEl.style.color = "var(--primary)";
+        if (container) container.style.borderLeftColor = "var(--primary)";
+        if (bodyEl) bodyEl.textContent = "Priorizar pescados (4 raciones/semana alternando blancos y azules ricos en omega-3 como salmón y trucha), legumbres tradicionales, huevos y aves (pollo y pavo). Moderar carnes rojas a 2-3 veces por mes y limitar embutidos procesados.";
+      } else if (type === "cereal") {
+        if (titleEl) titleEl.textContent = "1/4 del Plato: Cereales Integrales y Tubérculos";
+        if (titleEl) titleEl.style.color = "var(--warning)";
+        if (container) container.style.borderLeftColor = "var(--warning)";
+        if (bodyEl) bodyEl.textContent = "Preferir siempre cereales de grano entero (avena tradicional, arroz integral, pasta integral, pan integral o marraqueta tradicional) y papas cocidas con cáscara. Su riqueza en fibra disminuye el índice glucémico y mejora el control del peso.";
+      }
+    }
+
+    function selectHandGuide(type) {
+      // Highlight card
+      document.querySelectorAll(".hand-card").forEach(c => c.classList.remove("selected"));
+      event.currentTarget.classList.add("selected");
+
+      const titleEl = document.getElementById("handTitle");
+      const textEl = document.getElementById("handText");
+      const box = document.getElementById("handDetailBox");
+
+      if (type === "veg") {
+        if (titleEl) titleEl.textContent = "Dos Manos Juntas y Ahuecadas: Verduras";
+        if (titleEl) titleEl.style.color = "var(--tertiary)";
+        if (box) box.style.borderLeftColor = "var(--tertiary)";
+        if (textEl) textEl.textContent = "Equivale a 2 tazas de hojas verdes o 1 plato hondo colmado de ensaladas. No hay restricción severa; proporcionan saciedad gástrica con densidad calórica mínima.";
+      } else if (type === "fist") {
+        if (titleEl) titleEl.textContent = "Un Puño Cerrado: Frutas y Cereales";
+        if (titleEl) titleEl.style.color = "var(--warning)";
+        if (box) box.style.borderLeftColor = "var(--warning)";
+        if (textEl) textEl.textContent = "Para frutas: 1 unidad mediana (manzana, naranja, pera) o 1 taza de berries/frutillas. Para cereales cocidos: equivale a 3/4 a 1 taza de arroz, fideos o legumbres.";
+      } else if (type === "palm") {
+        if (titleEl) titleEl.textContent = "Palma de la Mano (Sin Dedos): Proteínas";
+        if (titleEl) titleEl.style.color = "var(--primary)";
+        if (box) box.style.borderLeftColor = "var(--primary)";
+        if (textEl) textEl.textContent = "Equivale a una porción de 100 a 125 gramos de filete de pescado (merluza, salmón), pechuga de ave sin piel o posta vacuna magra. En grosor debe asemejarse al dedo meñique.";
+      } else if (type === "thumb") {
+        if (titleEl) titleEl.textContent = "Punta del Pulgar (1 Falange): Aceites y Grasas";
+        if (titleEl) titleEl.style.color = "#8b5e3c";
+        if (box) box.style.borderLeftColor = "#8b5e3c";
+        if (textEl) textEl.textContent = "Equivale a 1 cucharadita de té (5 ml) de aceite de oliva virgen extra, mantequilla o aderezos. Para aceites en crudo de ensaladas se aconseja hasta 1 cucharada sopera (el pulgar entero).";
+      } else if (type === "nuts") {
+        if (titleEl) titleEl.textContent = "Puñado Ahuecado: Frutos Secos (20-30 g)";
+        if (titleEl) titleEl.style.color = "var(--data-4)";
+        if (box) box.style.borderLeftColor = "var(--data-4)";
+        if (textEl) textEl.textContent = "Equivale a unas 5 nueces mariposa o 15-20 almendras. Densos en energía pero protectores contra patologías metabólicas y cardiovasculares según la evidencia PREDIMED.";
+      }
+    }
+
+    // =========================================================================
+    // TAB 6: ACTIVIDAD FÍSICA Y HÁBITOS (OMS)
+    // =========================================================================
+    function calculateActivityProgress() {
+      const walk = parseInt(document.getElementById("actWalkMin")?.value) || 0;
+      const mod = parseInt(document.getElementById("actModerateMin")?.value) || 0;
+      const vig = parseInt(document.getElementById("actVigorousMin")?.value) || 0;
+      const strDays = parseInt(document.getElementById("actStrengthDays")?.value) || 0;
+
+      // 1 min vigorous = 2 min moderate
+      const totalEquiv = walk + mod + (vig * 2);
+
+      const totalEquivEl = document.getElementById("actTotalEquiv");
+      const progressBar = document.getElementById("actProgressBar");
+      const strLabel = document.getElementById("actStrengthLabel");
+      const strChip = document.getElementById("actStrengthChip");
+      const badge = document.getElementById("activityAdequacyBadge");
+      const advice = document.getElementById("actClinicalAdvice");
+
+      if (totalEquivEl) totalEquivEl.textContent = `${totalEquiv} min / sem`;
+
+      const percent = Math.min(Math.round((totalEquiv / 150) * 100), 100);
+      if (progressBar) progressBar.style.width = percent + "%";
+
+      if (strLabel) strLabel.textContent = `${strDays} días / sem`;
+
+      // Strength chip
+      if (strChip) {
+        if (strDays >= 2) {
+          strChip.textContent = "Objetivo de Fuerza Logrado (OMS)";
+          strChip.dataset.status = "ok";
+        } else {
+          strChip.textContent = "Fuerza Insuficiente (< 2 días)";
+          strChip.dataset.status = "warn";
+        }
+      }
+
+      // Overall Badge
+      if (badge) {
+        if (totalEquiv >= 150 && strDays >= 2) {
+          badge.textContent = "Cumple Meta Integral OMS";
+          badge.dataset.status = "ok";
+        } else if (totalEquiv >= 150 || strDays >= 2) {
+          badge.textContent = "Cumplimiento Parcial";
+          badge.dataset.status = "warn";
+        } else {
+          badge.textContent = "Riesgo Sedentario Elevado";
+          badge.dataset.status = "alert";
+        }
+      }
+
+      // Advice
+      if (advice) {
+        if (totalEquiv >= 300 && strDays >= 3) {
+          advice.innerHTML = `<strong>Pauta Nutricional de Apoyo:</strong> Nivel de deportista/activo alto (>300 min equiv). Asegurar hidratación constante (al menos 2 litros de agua/día) y distribución proteica de 1.4-1.6 g/kg repartida en 4-5 tomas para óptima síntesis proteica.`;
+        } else if (totalEquiv >= 150 && strDays >= 2) {
+          advice.innerHTML = `<strong>Pauta Nutricional de Apoyo:</strong> Excelente adherencia a las recomendaciones OMS. El balance energético favorece la mantención de masa magra y reducción de grasa visceral cardio-metabólica.`;
+        } else {
+          advice.innerHTML = `<strong>Intervención Recomendada:</strong> Fomentar aumentos progresivos de 15 minutos diarios en caminata activa y prescribir ejercicios sencillos de fuerza con peso corporal (sentadillas en silla, flexiones en pared) 2 veces por semana.`;
+        }
+      }
+    }
+
+    // =========================================================================
+    // EXPORT FUNCTIONS & PRINT
+    // =========================================================================
+    function printWeeklyPlan() {
+      window.print();
+    }
+
+    function exportPlanCSV() {
+      const p = appState.patient;
+      let csvContent = "PLANIFICACION NUTRICIONAL - NUTRI GESTOR\n";
+      csvContent += `Paciente:;${p.name};Edad:;${p.age};Sexo:;${p.sex}\n`;
+      csvContent += `Peso:;${p.weight} kg;Talla:;${p.height} cm;Meta Calorica:;${p.targetCalories} kcal\n\n`;
+
+      csvContent += "MENU DIARIO REGISTRADO (TCQA 2018)\n";
+      csvContent += "Tiempo;Alimento;Gramos;Calorias;Proteinas (g);Carbohidratos (g);Lipidos (g)\n";
+
+      appState.currentMenu.forEach(item => {
+        const food = TCQA_DATABASE.find(f => f.id === item.foodId);
+        if (food) {
+          const factor = item.grams / 100;
+          const k = Math.round(food.kcal * factor);
+          const pr = (food.p * factor).toFixed(1);
+          const ch = (food.cho * factor).toFixed(1);
+          const fa = (food.fat * factor).toFixed(1);
+          csvContent += `"${item.meal}";"${item.name}";${item.grams};${k};${pr};${ch};${fa}\n`;
+        }
+      });
+
+      if (window.notebookAppApi && typeof window.notebookAppApi.triggerFileDownload === "function") {
+        window.notebookAppApi.triggerFileDownload({
+          content: csvContent,
+          contentType: "text/csv",
+          encoding: "UTF-8",
+          filename: `Pauta_${p.name.replace(/\s+/g, "_")}.csv`
+        });
+      } else {
+        // Fallback for standalone preview
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `Pauta_${p.name.replace(/\s+/g, "_")}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    // =========================================================================
+    // NAVIGATION & TAB SWITCHING
+    // =========================================================================
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-view").forEach(view => {
+        view.classList.remove("active");
+      });
+      document.querySelectorAll(".nav-btn").forEach(btn => {
+        btn.classList.remove("active");
+      });
+
+      const activeView = document.getElementById(`view-${tabId}`);
+      if (activeView) activeView.classList.add("active");
+
+      // Highlight button
+      const navButtons = document.querySelectorAll(".nav-btn");
+      const tabMap = {
+        "prescripcion": 0,
+        "armador": 1,
+        "planificador": 2,
+        "escalador": 3,
+        "educacion": 4,
+        "actividad": 5
+      };
+
+      const idx = tabMap[tabId];
+      if (idx !== undefined && navButtons[idx]) {
+        navButtons[idx].classList.add("active");
+      }
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // =========================================================================
+    // STATE PERSISTENCE (SHIM API)
+    // =========================================================================
+    let saveTimeout = null;
+    function saveStateDebounced() {
+      if (saveTimeout) clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(async () => {
+        if (window.notebookAppApi && typeof window.notebookAppApi.setAppState === "function") {
+          try {
+            await window.notebookAppApi.setAppState(appState);
+          } catch (e) {
+            console.error("Error persisting state:", e);
+          }
+        }
+      }, 400);
+    }
+
+    async function loadPersistedState() {
+      if (window.notebookAppApi && typeof window.notebookAppApi.getAppState === "function") {
+        try {
+          const saved = await window.notebookAppApi.getAppState();
+          if (saved && saved.patient) {
+            appState = saved;
+            // Restore inputs
+            if (document.getElementById("patName")) document.getElementById("patName").value = appState.patient.name;
+            if (document.getElementById("patAge")) document.getElementById("patAge").value = appState.patient.age;
+            if (document.getElementById("patSex")) document.getElementById("patSex").value = appState.patient.sex;
+            if (document.getElementById("patWeight")) document.getElementById("patWeight").value = appState.patient.weight;
+            if (document.getElementById("patHeight")) document.getElementById("patHeight").value = appState.patient.height;
+            if (document.getElementById("patActivity")) document.getElementById("patActivity").value = appState.patient.activityFactor;
+            if (document.getElementById("patFormula")) document.getElementById("patFormula").value = appState.patient.formula;
+            if (document.getElementById("patClinicalGoal")) document.getElementById("patClinicalGoal").value = appState.patient.clinicalGoal;
+            if (document.getElementById("patTargetCalories")) document.getElementById("patTargetCalories").value = appState.patient.targetCalories;
+            if (document.getElementById("protSlider")) document.getElementById("protSlider").value = appState.patient.macros.protPercent;
+            if (document.getElementById("choSlider")) document.getElementById("choSlider").value = appState.patient.macros.choPercent;
+            if (document.getElementById("fatSlider")) document.getElementById("fatSlider").value = appState.patient.macros.fatPercent;
+          }
+        } catch (e) {
+          console.error("Error loading persisted state:", e);
+        }
+      }
+    }
+
+    // =========================================================================
+    // INITIALIZATION
+    // =========================================================================
+    window.addEventListener("DOMContentLoaded", async () => {
+      await loadPersistedState();
+
+      // If current menu is empty, load standard mediterranean model
+      if (!appState.currentMenu || appState.currentMenu.length === 0) {
+        loadSampleDayMenu();
+      }
+
+      updatePrescription();
+      renderFoodCatalog();
+      renderDayMenu();
+      renderRecipeDetail();
+      calculateActivityProgress();
+      lucide.createIcons();
+
+      // Notify App Ready
+      if (window.notebookAppApi && typeof window.notebookAppApi.notifyAppReady === "function") {
+        window.notebookAppApi.notifyAppReady();
+      }
+    });
+  </script>
+</body>
+</html>
